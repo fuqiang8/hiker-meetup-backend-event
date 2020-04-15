@@ -9,10 +9,10 @@ phases:
       - pip install --upgrade awscli
   pre_build:
     commands:
-      - gradle clean test
+      - mvn clean compile test
   build:
     commands:
-      - gradle build
+      - mvn package
   post_build:
     commands:
       # Do not remove this statement. This command is required for AWS CodeStar projects.
