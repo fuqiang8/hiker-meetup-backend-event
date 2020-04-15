@@ -31,5 +31,5 @@ dependencies {
 group = 'com.aws.codestar.projecttemplates'
 version = '1.0'
 description = 'Sample Java Spring web service Using AWS CodeStar'
-sourceCompatibility = '11'
+sourceCompatibility = '8'
 
