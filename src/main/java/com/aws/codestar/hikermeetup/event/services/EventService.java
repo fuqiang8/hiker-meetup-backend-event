@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Service
@@ -152,7 +152,7 @@ public class EventService {
     private void ensureValidEventStatus(Event event, EventStatus... validEventStatuses) {
         EventStatus eventStatus = event.getEventStatus();
 
-        if (!List.of(validEventStatuses).contains(eventStatus)) {
+        if (!Arrays.asList(validEventStatuses).contains(eventStatus)) {
             String conjunction = "";
             switch(eventStatus) {
                 case GREENLIT:
