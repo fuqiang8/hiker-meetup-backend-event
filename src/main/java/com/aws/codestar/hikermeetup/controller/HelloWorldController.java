@@ -1,4 +1,4 @@
-package com.aws.codestar.projecttemplates.controller;
+package com.aws.codestar.hikermeetup.controller;
 
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
