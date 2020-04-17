@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class EventInput {
 
-    private Integer minSignup;
+    private Integer minAttendees;
 
     private String category;
 
@@ -16,14 +16,12 @@ public class EventInput {
 
     private LocalDateTime endDateTime;
 
-//    private Integer price;
-
-    public Integer getMinSignup() {
-        return minSignup;
+    public Integer getMinAttendees() {
+        return minAttendees;
     }
 
-    public void setMinSignup(Integer minSignup) {
-        this.minSignup = minSignup;
+    public void setMinAttendees(Integer minAttendees) {
+        this.minAttendees = minAttendees;
     }
 
     public String getCategory() {
@@ -65,12 +63,4 @@ public class EventInput {
     public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
-
-//    public Integer getPrice() {
-//        return price;
-//    }
-//
-//    public void setPrice(Integer price) {
-//        this.price = price;
-//    }
 }
