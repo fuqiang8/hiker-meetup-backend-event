@@ -91,28 +91,31 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public Event addFollower(UUID eventId, Member member) {
+    public Event addFollower(UUID eventId) {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
+        Member member = memberService.getOrCreateCurrentMember();
         event.getFollowers().add(member);
 
         return eventRepository.save(event);
     }
 
-    public Event removeFollower(UUID eventId, Member member) {
+    public Event removeFollower(UUID eventId) {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
+        Member member = memberService.getOrCreateCurrentMember();
         event.getFollowers().remove(member);
 
         return eventRepository.save(event);
     }
 
-    public Event addAttendee(UUID eventId, Member member) {
+    public Event addAttendee(UUID eventId) {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
+        Member member = memberService.getOrCreateCurrentMember();
         event.getAttendees().add(member);
 
         EventStatus eventStatus = event.getAttendees().size() >= event.getMinAttendees() ?
@@ -124,10 +127,11 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public Event removeAttendee(UUID eventId, Member member) {
+    public Event removeAttendee(UUID eventId) {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
+        Member member = memberService.getOrCreateCurrentMember();
         event.getAttendees().remove(member);
 
         EventStatus eventStatus = event.getAttendees().size() >= event.getMinAttendees() ?
