@@ -34,18 +34,9 @@ public class Member {
         this.name = name;
     }
 
-    //    public Member(UUID id, String name) {
-//        this.id = id;
-//        this.name = name;
-//    }
-
     public UUID getId() {
         return id;
     }
-
-//    public void setId(UUID id) {
-//        this.id = id;
-//    }
 
     public List<Event> getAttended() {
         return attended;
@@ -70,10 +61,6 @@ public class Member {
     public String getName() {
         return name;
     }
-
-//    public void setName(String name) {
-//        this.name = name;
-//    }
 
     @Override
     public boolean equals(Object o) {
