@@ -46,6 +46,13 @@ public class Event {
     @NotNull
     private LocalDateTime endDateTime;
 
+    public Event() {
+    }
+
+    public Event(Member organizer) {
+        this.organizer = organizer;
+    }
+
     public UUID getId() {
         return id;
     }

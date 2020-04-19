@@ -7,6 +7,7 @@ import com.aws.codestar.hikermeetup.event.data.EventStatus;
 import com.aws.codestar.hikermeetup.event.exceptions.EventStatusException;
 import com.aws.codestar.hikermeetup.event.web.EventInput;
 import com.aws.codestar.hikermeetup.member.data.Member;
+import com.aws.codestar.hikermeetup.member.services.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,14 @@ import java.util.UUID;
 @Transactional
 public class EventService {
 
+    private final MemberService memberService;
+
     private final EventRepository eventRepository;
 
     private final PatchModelMapper mapper;
 
-    public EventService(EventRepository eventRepository, PatchModelMapper mapper) {
+    public EventService(MemberService memberService, EventRepository eventRepository, PatchModelMapper mapper) {
+        this.memberService = memberService;
         this.eventRepository = eventRepository;
         this.mapper = mapper;
     }
@@ -41,7 +45,9 @@ public class EventService {
     }
 
     public Event createEvent(EventInput eventInput) {
-        Event event = new Event();
+        Member organizer = memberService.getOrCreateCurrentMember();
+
+        Event event = new Event(organizer);
         mapper.map(eventInput, event);
         event.setEventStatus(EventStatus.PENDING);
 
