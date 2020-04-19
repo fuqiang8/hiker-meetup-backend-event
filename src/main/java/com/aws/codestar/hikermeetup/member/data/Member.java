@@ -22,23 +22,30 @@ public class Member {
     @ManyToMany
     private List<Event> followed;
 
+    private UUID externalIamId;
+
     private String name;
 
     public Member() {
     }
 
-    public Member(UUID id, String name) {
-        this.id = id;
+    public Member(UUID externalIamId, String name) {
+        this.externalIamId = externalIamId;
         this.name = name;
     }
+
+    //    public Member(UUID id, String name) {
+//        this.id = id;
+//        this.name = name;
+//    }
 
     public UUID getId() {
         return id;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+//    public void setId(UUID id) {
+//        this.id = id;
+//    }
 
     public List<Event> getAttended() {
         return attended;
@@ -56,13 +63,17 @@ public class Member {
         this.followed = followed;
     }
 
+    public UUID getExternalIamId() {
+        return externalIamId;
+    }
+
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+//    public void setName(String name) {
+//        this.name = name;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -70,6 +81,7 @@ public class Member {
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
         return id.equals(member.id) &&
+                externalIamId.equals(member.externalIamId) &&
                 name.equals(member.name);
     }
 
