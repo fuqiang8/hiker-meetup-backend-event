@@ -143,17 +143,6 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-//    private void ensurePendingOrGreenlit(Event event) {
-//        EventStatus eventStatus = event.getEventStatus();
-//
-//        if (eventStatus != EventStatus.PENDING && eventStatus != EventStatus.GREENLIT) {
-//            throw new EventStatusException(
-//                    String.format("Unable to perform requested operation as the event %s",
-//                            eventStatus == EventStatus.CANCELLED ?
-//                                    "had been " + eventStatus.toString().toLowerCase() :
-//                                    "had " + eventStatus.toString().toLowerCase()));
-//        }
-//    }
     private void ensureUserIsOrganizer(Member eventOrganizer) {
         if (!eventOrganizer.equals(memberService.getOrCreateCurrentMember())) {
             throw new NotEventOrganizerException();
