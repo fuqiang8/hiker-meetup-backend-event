@@ -69,16 +69,39 @@ public class EventController {
         return eventModelAssembler.toModel(event);
     }
 
-    @PatchMapping("/{eventId}/start")
+    @PostMapping("/{eventId}/start")
     public EntityModel<Event> startEvent(@PathVariable UUID eventId) {
         Event event = eventService.startEvent(eventId);
         return eventModelAssembler.toModel(event);
     }
 
-    @PatchMapping("/{eventId}/cancel")
+    @PostMapping("/{eventId}/cancel")
     public EntityModel<Event> cancelEvent(@PathVariable UUID eventId) {
         Event event = eventService.cancelEvent(eventId);
         return eventModelAssembler.toModel(event);
     }
 
+    @PostMapping("/{eventId}/like")
+    public EntityModel<Event> likeEvent(@PathVariable UUID eventId) {
+        Event event = eventService.addFollower(eventId);
+        return eventModelAssembler.toModel(event);
+    }
+
+    @PostMapping("/{eventId}/unlike")
+    public EntityModel<Event> unlikeEvent(@PathVariable UUID eventId) {
+        Event event = eventService.removeFollower(eventId);
+        return eventModelAssembler.toModel(event);
+    }
+
+    @PostMapping("/{eventId}/attend")
+    public EntityModel<Event> attendEvent(@PathVariable UUID eventId) {
+        Event event = eventService.addAttendee(eventId);
+        return eventModelAssembler.toModel(event);
+    }
+
+    @PostMapping("/{eventId}/miss")
+    public EntityModel<Event> missEvent(@PathVariable UUID eventId) {
+        Event event = eventService.removeAttendee(eventId);
+        return eventModelAssembler.toModel(event);
+    }
 }
