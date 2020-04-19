@@ -5,6 +5,7 @@ import com.aws.codestar.hikermeetup.event.data.Event;
 import com.aws.codestar.hikermeetup.event.data.EventRepository;
 import com.aws.codestar.hikermeetup.event.data.EventStatus;
 import com.aws.codestar.hikermeetup.event.exceptions.EventStatusException;
+import com.aws.codestar.hikermeetup.event.exceptions.NotEventOrganizerException;
 import com.aws.codestar.hikermeetup.event.web.EventInput;
 import com.aws.codestar.hikermeetup.member.data.Member;
 import com.aws.codestar.hikermeetup.member.services.MemberService;
@@ -57,6 +58,7 @@ public class EventService {
     public Event updateEvent(UUID eventId, EventInput eventInput) {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
+        ensureUserIsOrganizer(event.getOrganizer());
 
         mapper.map(eventInput, event);
 
@@ -72,6 +74,7 @@ public class EventService {
     public Event startEvent(UUID eventId) {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
+        ensureUserIsOrganizer(event.getOrganizer());
 
         event.setEventStatus(EventStatus.STARTED);
 
@@ -81,6 +84,7 @@ public class EventService {
     public Event cancelEvent(UUID eventId) {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT, EventStatus.STARTED);
+        ensureUserIsOrganizer(event.getOrganizer());
 
         event.setEventStatus(EventStatus.CANCELLED);
 
@@ -146,6 +150,11 @@ public class EventService {
 //                                    "had " + eventStatus.toString().toLowerCase()));
 //        }
 //    }
+    private void ensureUserIsOrganizer(Member eventOrganizer) {
+        if (!eventOrganizer.equals(memberService.getOrCreateCurrentMember())) {
+            throw new NotEventOrganizerException();
+        }
+    }
 
     private void ensureValidEventStatus(Event event, EventStatus... validEventStatuses) {
         EventStatus eventStatus = event.getEventStatus();

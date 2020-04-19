@@ -15,4 +15,10 @@ public class EventErrorAdvice {
     public ErrorMessage handleEntityNotFoundException(EntityNotFoundException e) {
         return new ErrorMessage(e.getMessage());
     }
+
+    @ExceptionHandler(NotEventOrganizerException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorMessage handleNotEventOrganizerException(NotEventOrganizerException e) {
+        return new ErrorMessage(e.getMessage());
+    }
 }
