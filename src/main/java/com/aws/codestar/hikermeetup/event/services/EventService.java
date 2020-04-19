@@ -73,7 +73,7 @@ public class EventService {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
-        event.setEventStatus(EventStatus.CANCELLED);
+        event.setEventStatus(EventStatus.STARTED);
 
         return eventRepository.save(event);
     }
