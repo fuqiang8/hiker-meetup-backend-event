@@ -12,7 +12,7 @@ import javax.persistence.EntityNotFoundException;
 public class EventErrorAdvice {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorMessage handleFileException(EntityNotFoundException e) {
+    public ErrorMessage handleEntityNotFoundException(EntityNotFoundException e) {
         return new ErrorMessage(e.getMessage());
     }
 }
