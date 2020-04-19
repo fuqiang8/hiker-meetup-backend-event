@@ -2,7 +2,6 @@ package com.aws.codestar.hikermeetup.event.web;
 
 import com.aws.codestar.hikermeetup.event.data.Event;
 import com.aws.codestar.hikermeetup.event.services.EventService;
-import com.aws.codestar.hikermeetup.member.data.Member;
 import com.aws.codestar.hikermeetup.member.services.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -80,24 +79,6 @@ public class EventController {
     public EntityModel<Event> cancelEvent(@PathVariable UUID eventId) {
         Event event = eventService.cancelEvent(eventId);
         return eventModelAssembler.toModel(event);
-    }
-
-    @PatchMapping("/{eventId}/follow")
-    public void followEvent(@PathVariable UUID eventId) {
-        // TODO: Get User info
-        System.out.println("WFQ follow : " + uuid);
-        String name = "name";
-
-        Member member = memberService.getOrCreateMember(uuid, name);
-        eventService.addFollower(eventId, member);
-
-    }
-
-    @PatchMapping("/{eventId}/unfollow")
-    public void unfollowEvent(@PathVariable UUID eventId) {
-        // TODO: Get User info
-        Member member = memberService.getMember(uuid);
-        eventService.removeFollower(eventId, member);
     }
 
 }
