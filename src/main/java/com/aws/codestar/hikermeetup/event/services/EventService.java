@@ -89,15 +89,7 @@ public class EventService {
 
     public Event addFollower(UUID eventId, Member member) {
         Event event = getEvent(eventId);
-        EventStatus eventStatus = event.getEventStatus();
-
-        if (eventStatus != EventStatus.PENDING && eventStatus != EventStatus.GREENLIT) {
-            throw new EventStatusException(
-                    String.format("Unable to perform requested operation as the event %s",
-                            eventStatus == EventStatus.CANCELLED ?
-                                    "had been " + eventStatus.toString().toLowerCase() :
-                                    "had " + eventStatus.toString().toLowerCase()));
-        }
+        ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
         event.getFollowers().add(member);
 
