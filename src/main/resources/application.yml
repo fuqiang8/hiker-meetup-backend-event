@@ -1,0 +1,8 @@
+urls:
+  cognito: https://hiker-meetup.auth.ap-southeast-1.amazoncognito.com   # cognito root auth url
+
+endpoints:
+  userInfo: ${urls.cognito}/oauth2/userInfo
+
+cognito:
+  keys: https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_Krx5EBNva/.well-known/jwks.json       # url for cognito jwt keys
