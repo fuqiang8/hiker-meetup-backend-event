@@ -16,10 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -332,7 +329,66 @@ class EventServiceTest {
     }
 
     @Test
-    void removeFollower() {
+    void removeFollower_EventPending() {
+        Member current = generateMember("current");
+        HashSet followers = new HashSet();
+        followers.add(current);
+        followers.add(generateMember("follower1"));
+
+        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, followers, Collections.EMPTY_SET);
+
+        Event result = eventService.removeFollower(UUID.randomUUID());
+        assertEquals(1, result.getFollowers().size());
+        assertTrue(!result.getFollowers().contains(current));
+    }
+
+    @Test
+    void removeFollower_EventGreenLit() {
+        Member current = generateMember("current");
+        HashSet followers = new HashSet();
+        followers.add(current);
+        followers.add(generateMember("follower1"));
+
+        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, followers, Collections.EMPTY_SET);
+
+        Event result = eventService.removeFollower(UUID.randomUUID());
+        assertEquals(1, result.getFollowers().size());
+        assertTrue(!result.getFollowers().contains(current));
+    }
+
+    @Test
+    void removeFollower_EventStarted() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.STARTED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.removeFollower(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had started"));
+    }
+
+    @Test
+    void removeFollower_EventFinished() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.FINISHED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.removeFollower(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had finished"));
+    }
+
+    @Test
+    void removeFollower_EventCanceled() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.CANCELED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.removeFollower(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had been canceled"));
     }
 
     @Test
