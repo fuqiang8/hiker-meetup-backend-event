@@ -223,7 +223,68 @@ class EventServiceTest {
     }
 
     @Test
-    void cancelEvent() {
+    void cancelEvent_EventPending() {
+        Member organizer = generateMember("organizer");
+        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING);
+
+        Event result = eventService.cancelEvent(UUID.randomUUID());
+        assertEquals(EventStatus.CANCELED, result.getEventStatus());
+    }
+
+    @Test
+    void cancelEvent_EventGreenLit() {
+        Member organizer = generateMember("organizer");
+        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        setupSuccessfulEventRetrieval(organizer, EventStatus.GREENLIT);
+
+        Event result = eventService.cancelEvent(UUID.randomUUID());
+        assertEquals(EventStatus.CANCELED, result.getEventStatus());
+    }
+
+    @Test
+    void cancelEvent_EventStarted() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.STARTED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.cancelEvent(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had started"));
+    }
+
+    @Test
+    void cancelEvent_EventFinished() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.FINISHED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.cancelEvent(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had finished"));
+    }
+
+    @Test
+    void cancelEvent_EventCanceled() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.CANCELED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.cancelEvent(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had been canceled"));
+    }
+
+    @Test
+    void cancelEvent_NotOrganizer() {
+        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING);
+
+        Exception exception = assertThrows(NotEventOrganizerException.class, () -> {
+            eventService.cancelEvent(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("insufficient permission"));
     }
 
     @Test
