@@ -5,6 +5,7 @@ import com.aws.codestar.hikermeetup.event.data.Event;
 import com.aws.codestar.hikermeetup.event.data.EventRepository;
 import com.aws.codestar.hikermeetup.event.data.EventStatus;
 import com.aws.codestar.hikermeetup.event.exceptions.EventStatusException;
+import com.aws.codestar.hikermeetup.event.exceptions.NotEventOrganizerException;
 import com.aws.codestar.hikermeetup.event.web.EventInput;
 import com.aws.codestar.hikermeetup.member.data.Member;
 import com.aws.codestar.hikermeetup.member.services.MemberService;
@@ -142,6 +143,18 @@ class EventServiceTest {
         });
 
         assertTrue(exception.getMessage().contains("had been canceled"));
+    }
+
+    @Test()
+    void updateEvent_NotOrganizer() {
+        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING);
+
+        Exception exception = assertThrows(NotEventOrganizerException.class, () -> {
+            eventService.updateEvent(UUID.randomUUID(), new EventInput());
+        });
+
+        assertTrue(exception.getMessage().contains("insufficient permission"));
     }
 
     @Test
