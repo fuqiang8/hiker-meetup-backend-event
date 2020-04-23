@@ -451,7 +451,87 @@ class EventServiceTest {
     }
 
     @Test
-    void removeAttendee() {
+    void removeAttendee_GreenLitToPending() {
+        Member current = generateMember("current");
+        HashSet attendees = new HashSet();
+        attendees.add(current);
+        attendees.add(generateMember("attendee1"));
+        attendees.add(generateMember("attendee2"));
+
+        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_SET, attendees, 3);
+
+        Event result = eventService.removeAttendee(UUID.randomUUID());
+        assertEquals(2, result.getAttendees().size());
+        assertTrue(!result.getAttendees().contains(current));
+        assertEquals(EventStatus.PENDING, result.getEventStatus());
+    }
+
+    @Test
+    void removeAttendee_EventPending() {
+        Member current = generateMember("current");
+        HashSet attendees = new HashSet();
+        attendees.add(current);
+        attendees.add(generateMember("attendee1"));
+
+        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, Collections.EMPTY_SET, attendees, 3);
+
+        Event result = eventService.removeAttendee(UUID.randomUUID());
+        assertEquals(1, result.getAttendees().size());
+        assertTrue(!result.getAttendees().contains(current));
+        assertEquals(EventStatus.PENDING, result.getEventStatus());
+    }
+
+    @Test
+    void removeAttendee_EventGreenLit() {
+        Member current = generateMember("current");
+        HashSet attendees = new HashSet();
+        attendees.add(current);
+        attendees.add(generateMember("attendee1"));
+        attendees.add(generateMember("attendee2"));
+        attendees.add(generateMember("attendee3"));
+
+        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_SET, attendees, 3);
+
+        Event result = eventService.removeAttendee(UUID.randomUUID());
+        assertEquals(3, result.getAttendees().size());
+        assertTrue(!result.getAttendees().contains(current));
+        assertEquals(EventStatus.GREENLIT, result.getEventStatus());
+    }
+
+    @Test
+    void removeAttendee_EventStarted() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.STARTED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.removeAttendee(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had started"));
+    }
+
+    @Test
+    void removeAttendee_EventFinished() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.FINISHED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.removeAttendee(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had finished"));
+    }
+
+    @Test
+    void removeAttendee_EventCanceled() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.CANCELED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.removeAttendee(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had been canceled"));
     }
 
     private Member generateMember(String name) {
