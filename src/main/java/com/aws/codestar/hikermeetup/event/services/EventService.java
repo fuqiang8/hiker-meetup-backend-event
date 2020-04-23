@@ -86,7 +86,7 @@ public class EventService {
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT, EventStatus.STARTED);
         ensureUserIsOrganizer(event.getOrganizer());
 
-        event.setEventStatus(EventStatus.CANCELLED);
+        event.setEventStatus(EventStatus.CANCELED);
 
         return eventRepository.save(event);
     }
@@ -156,7 +156,7 @@ public class EventService {
             String conjunction = "";
             switch(eventStatus) {
                 case GREENLIT:
-                case CANCELLED:
+                case CANCELED:
                     conjunction = "had been";
                     break;
                 case STARTED:
