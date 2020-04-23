@@ -284,7 +284,52 @@ class EventServiceTest {
     }
 
     @Test
-    void addFollower() {
+    void addFollower_EventPending() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 2,0);
+
+        Event result = eventService.addFollower(UUID.randomUUID());
+        assertEquals(3, result.getFollowers().size());
+    }
+
+    @Test
+    void addFollower_EventGreenLit() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 2,0);
+
+        Event result = eventService.addFollower(UUID.randomUUID());
+        assertEquals(3, result.getFollowers().size());
+    }
+
+    @Test
+    void addFollower_EventStarted() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.STARTED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.addFollower(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had started"));
+    }
+
+    @Test
+    void addFollower_EventFinished() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.FINISHED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.addFollower(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had finished"));
+    }
+
+    @Test
+    void addFollower_EventCanceled() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.CANCELED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.addFollower(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had been canceled"));
     }
 
     @Test
