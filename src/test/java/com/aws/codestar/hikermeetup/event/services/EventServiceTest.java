@@ -437,7 +437,7 @@ class EventServiceTest {
             attendees.add(generateMember("attendee" + i));
         }
 
-        setupSuccessfulEventRetrieval(organizer, currentEventStatus, followers, attendees, 0);
+        setupSuccessfulEventRetrieval(organizer, currentEventStatus, followers, attendees, minAttendees);
     }
 
     private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, Set<Member> followers, Set<Member> attendees, int minAttendees) {
