@@ -293,7 +293,7 @@ class EventServiceTest {
 
     @Test
     void addFollower_EventGreenLit() {
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 2,0);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, 2,0);
 
         Event result = eventService.addFollower(UUID.randomUUID());
         assertEquals(3, result.getFollowers().size());
