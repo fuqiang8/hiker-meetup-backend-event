@@ -141,7 +141,7 @@ class EventServiceTest {
         assertTrue(exception.getMessage().contains("had been canceled"));
     }
 
-    @Test()
+    @Test
     void updateEvent_NotOrganizer() {
         when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING);
