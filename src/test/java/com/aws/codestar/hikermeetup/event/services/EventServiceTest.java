@@ -240,13 +240,12 @@ class EventServiceTest {
 
     @Test
     void cancelEvent_EventStarted() {
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.STARTED);
+        Member organizer = generateMember("organizer");
+        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        setupSuccessfulEventRetrieval(organizer, EventStatus.STARTED);
 
-        Exception exception = assertThrows(EventStatusException.class, () -> {
-            eventService.cancelEvent(UUID.randomUUID());
-        });
-
-        assertTrue(exception.getMessage().contains("had started"));
+        Event result = eventService.cancelEvent(UUID.randomUUID());
+        assertEquals(EventStatus.CANCELED, result.getEventStatus());
     }
 
     @Test
