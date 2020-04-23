@@ -392,7 +392,62 @@ class EventServiceTest {
     }
 
     @Test
-    void addAttendee() {
+    void addAttendee_PendingToGreenLit() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 0,2, 3);
+
+        Event result = eventService.addAttendee(UUID.randomUUID());
+        assertEquals(3, result.getAttendees().size());
+        assertEquals(EventStatus.GREENLIT, result.getEventStatus());
+    }
+
+    @Test
+    void addAttendee_EventPending() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 0,2, 4);
+
+        Event result = eventService.addAttendee(UUID.randomUUID());
+        assertEquals(3, result.getAttendees().size());
+        assertEquals(EventStatus.PENDING, result.getEventStatus());
+    }
+
+    @Test
+    void addAttendee_EventGreenLit() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, 0,2, 2);
+
+        Event result = eventService.addAttendee(UUID.randomUUID());
+        assertEquals(3, result.getAttendees().size());
+    }
+
+    @Test
+    void addAttendee_EventStarted() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.STARTED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.addAttendee(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had started"));
+    }
+
+    @Test
+    void addAttendee_EventFinished() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.FINISHED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.addAttendee(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had finished"));
+    }
+
+    @Test
+    void addAttendee_EventCanceled() {
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.CANCELED);
+
+        Exception exception = assertThrows(EventStatusException.class, () -> {
+            eventService.addAttendee(UUID.randomUUID());
+        });
+
+        assertTrue(exception.getMessage().contains("had been canceled"));
     }
 
     @Test
