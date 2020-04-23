@@ -56,10 +56,6 @@ class EventServiceTest {
 
     @Test
     void createEvent() {
-        Event event = new Event();
-        event.setEventStatus(EventStatus.PENDING);
-        when(eventRepository.save(any(Event.class))).thenReturn(event);
-
         Event result = eventService.createEvent(new EventInput());
         assertEquals(EventStatus.PENDING, result.getEventStatus());
     }
