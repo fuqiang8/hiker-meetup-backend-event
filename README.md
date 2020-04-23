@@ -1,7 +1,9 @@
 Hiker's Meetup
 ==================================================
 
-The Ultimate Hiking Hiker's Platform
+The Ultimate Hiking Hiker's Platform v0.1.
+
+- Added Unit tests for Events & Members.
 
 Why v0?
 -----------
