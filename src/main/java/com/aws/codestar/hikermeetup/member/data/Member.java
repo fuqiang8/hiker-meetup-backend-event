@@ -68,7 +68,8 @@ public class Member {
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
         return id.equals(member.id) &&
-                externalIamId.equals(member.externalIamId);
+                externalIamId.equals(member.externalIamId) &&
+                name.equals(member.name);
     }
 
     @Override
