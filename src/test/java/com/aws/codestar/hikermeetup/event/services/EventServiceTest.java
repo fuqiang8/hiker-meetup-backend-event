@@ -419,6 +419,14 @@ class EventServiceTest {
     }
 
     private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, int followersCount, int attendeesCount) {
+        setupSuccessfulEventRetrieval(organizer, currentEventStatus, followersCount, attendeesCount, 0);
+    }
+
+    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, Set<Member> followers, Set<Member> attendees) {
+        setupSuccessfulEventRetrieval(organizer, currentEventStatus, followers, attendees, 0);
+    }
+
+    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, int followersCount, int attendeesCount, int minAttendees) {
         Set<Member> followers = new HashSet<>();
         for (int i = 0; i < followersCount; i++) {
             followers.add(generateMember("follower" + i));
@@ -429,14 +437,15 @@ class EventServiceTest {
             attendees.add(generateMember("attendee" + i));
         }
 
-        setupSuccessfulEventRetrieval(organizer, currentEventStatus, followers, attendees);
+        setupSuccessfulEventRetrieval(organizer, currentEventStatus, followers, attendees, 0);
     }
 
-    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, Set<Member> followers, Set<Member> attendees) {
+    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, Set<Member> followers, Set<Member> attendees, int minAttendees) {
         Event event = new Event(organizer);
         event.setFollowers(followers);
         event.setAttendees(attendees);
         event.setEventStatus(currentEventStatus);
+        event.setMinAttendees(minAttendees);
 
         when(eventRepository.findById(any(UUID.class))).thenAnswer(i -> {
             ReflectionTestUtils.setField(event, "id", i.getArgument(0));
