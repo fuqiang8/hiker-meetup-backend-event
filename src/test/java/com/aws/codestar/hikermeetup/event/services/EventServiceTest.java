@@ -64,7 +64,7 @@ class EventServiceTest {
     void updateEvent_DecreaseMinAttendeeToGreenLit() {
         Member organizer = generateMember("organizer");
         when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
-        setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING, 5);
+        setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING, 0, 5);
         setupMinAttendeeMapper();
 
         Integer newMin = Integer.valueOf(2);
@@ -80,7 +80,7 @@ class EventServiceTest {
     void updateEvent_IncreaseMinAttendeeToPending() {
         Member organizer = generateMember("organizer");
         when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
-        setupSuccessfulEventRetrieval(organizer, EventStatus.GREENLIT, 5);
+        setupSuccessfulEventRetrieval(organizer, EventStatus.GREENLIT, 0, 5);
         setupMinAttendeeMapper();
 
         Integer newMin = Integer.valueOf(7);
@@ -96,7 +96,7 @@ class EventServiceTest {
     void updateEvent_MatchMinAttendeeToGreenLit() {
         Member organizer = generateMember("organizer");
         when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
-        setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING, 5);
+        setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING, 0, 5);
         setupMinAttendeeMapper();
 
         Integer newMin = Integer.valueOf(5);
@@ -315,16 +315,22 @@ class EventServiceTest {
     }
 
     private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus) {
-        setupSuccessfulEventRetrieval(organizer, currentEventStatus, 0);
+        setupSuccessfulEventRetrieval(organizer, currentEventStatus, 0, 0);
     }
 
-    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, int currentAttendees) {
+    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, int currentFollowers, int currentAttendees) {
+        Set<Member> followers = new HashSet<>();
+        for (int i = 0; i < currentFollowers; i++) {
+            followers.add(generateMember("follower" + i));
+        }
+
         Set<Member> attendees = new HashSet<>();
         for (int i = 0; i < currentAttendees; i++) {
             attendees.add(generateMember("attendee" + i));
         }
 
         Event event = new Event(organizer);
+        event.setFollowers(followers);
         event.setAttendees(attendees);
         event.setEventStatus(currentEventStatus);
 
