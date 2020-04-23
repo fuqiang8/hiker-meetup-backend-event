@@ -362,17 +362,21 @@ class EventServiceTest {
         setupSuccessfulEventRetrieval(organizer, currentEventStatus, 0, 0);
     }
 
-    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, int currentFollowers, int currentAttendees) {
+    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, int followersCount, int attendeesCount) {
         Set<Member> followers = new HashSet<>();
-        for (int i = 0; i < currentFollowers; i++) {
+        for (int i = 0; i < followersCount; i++) {
             followers.add(generateMember("follower" + i));
         }
 
         Set<Member> attendees = new HashSet<>();
-        for (int i = 0; i < currentAttendees; i++) {
+        for (int i = 0; i < attendeesCount; i++) {
             attendees.add(generateMember("attendee" + i));
         }
 
+        setupSuccessfulEventRetrieval(organizer, currentEventStatus, followers, attendees);
+    }
+
+    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, Set<Member> followers, Set<Member> attendees) {
         Event event = new Event(organizer);
         event.setFollowers(followers);
         event.setAttendees(attendees);
