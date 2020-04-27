@@ -6,13 +6,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.persistence.EntityNotFoundException;
-
 @RestControllerAdvice
 public class EventErrorAdvice {
-    @ExceptionHandler(EntityNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorMessage handleEntityNotFoundException(EntityNotFoundException e) {
+    @ExceptionHandler(EventStatusException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorMessage handleEventStatusException(EventStatusException e) {
         return new ErrorMessage(e.getMessage());
     }
 
