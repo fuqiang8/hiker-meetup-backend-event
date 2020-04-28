@@ -4,6 +4,8 @@ import com.aws.codestar.hikermeetup.event.data.Event;
 import com.aws.codestar.hikermeetup.event.services.EventService;
 import com.aws.codestar.hikermeetup.member.services.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/events")
+@SecurityScheme(name = "auth",
+        type = SecuritySchemeType.OAUTH2,
+        flows = @OAuthFlows( implicit = @OAuthFlow(
+                authorizationUrl = "https://hiker-meetup.auth.ap-southeast-1.amazoncognito.com/oauth2/authorize",
+                scopes = { @OAuthScope(name = "openid", description = "") } )))
 @Tag(name = "Events", description = "Events API")
 public class EventController {
     private final EventService eventService;
@@ -61,7 +68,8 @@ public class EventController {
 
     @Operation(summary = "Create event",
             description = "Create event with logged in user as the organizer. " +
-                    "Respond with 403 if there is no logged in user.")
+                    "Respond with 403 if there is no logged in user.",
+            security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventInput eventInput) {
         Event event = eventService.createEvent(eventInput);
@@ -73,7 +81,8 @@ public class EventController {
     }
 
     @Operation(summary = "Update existing event",
-            description = "Respond with 403 if there is no logged in user / logged in user is not the event's organizer.")
+            description = "Respond with 403 if there is no logged in user / logged in user is not the event's organizer.",
+            security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PatchMapping("/{eventId}")
     public EntityModel<Event> updateEvent(@PathVariable UUID eventId,
                                           @RequestBody EventInput eventInput) {
@@ -83,7 +92,8 @@ public class EventController {
 
     @Operation(summary = "Start existing event",
             description = "Respond with 403 if there is no logged in user / logged in user is not the event's organizer. " +
-                    "Respond with 422 if event had started, finished or had been cancelled.")
+                    "Respond with 422 if event had started, finished or had been cancelled.",
+            security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/start")
     public EntityModel<Event> startEvent(@PathVariable UUID eventId) {
         Event event = eventService.startEvent(eventId);
@@ -92,7 +102,8 @@ public class EventController {
 
     @Operation(summary = "Cancel existing event",
             description = "Respond with 403 if there is no logged in user / logged in user is not the event's organizer. " +
-                    "Respond with 422 if event had finished or had been cancelled.")
+                    "Respond with 422 if event had finished or had been cancelled.",
+            security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/cancel")
     public EntityModel<Event> cancelEvent(@PathVariable UUID eventId) {
         Event event = eventService.cancelEvent(eventId);
@@ -102,7 +113,8 @@ public class EventController {
     @Operation(summary = "Follow / Like existing event",
             description = "Add user as one of the event's followers. " +
                     "Respond with 403 if there is no logged in user. " +
-                    "Respond with 422 if event had started, finished or had been cancelled.")
+                    "Respond with 422 if event had started, finished or had been cancelled.",
+            security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/like")
     public EntityModel<Event> likeEvent(@PathVariable UUID eventId) {
         Event event = eventService.addFollower(eventId);
@@ -112,7 +124,8 @@ public class EventController {
     @Operation(summary = "Stop following / Unlike existing event",
             description = "Remove user as one of the event's followers. " +
                     "Respond with 403 if there is no logged in user. " +
-                    "Respond with 422 if event had started, finished or had been cancelled.")
+                    "Respond with 422 if event had started, finished or had been cancelled.",
+            security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/unlike")
     public EntityModel<Event> unlikeEvent(@PathVariable UUID eventId) {
         Event event = eventService.removeFollower(eventId);
@@ -122,7 +135,8 @@ public class EventController {
     @Operation(summary = "Attend existing event",
             description = "Add user as one of the event's attendees. " +
                     "Respond with 403 if there is no logged in user. " +
-                    "Respond with 422 if event had started, finished or had been cancelled.")
+                    "Respond with 422 if event had started, finished or had been cancelled.",
+            security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/attend")
     public EntityModel<Event> attendEvent(@PathVariable UUID eventId) {
         Event event = eventService.addAttendee(eventId);
@@ -132,7 +146,8 @@ public class EventController {
     @Operation(summary = "Miss existing event",
             description = "Remove user as one of the event's attendees. " +
                     "Respond with 403 if there is no logged in user. " +
-                    "Respond with 422 if event had started, finished or had been cancelled.")
+                    "Respond with 422 if event had started, finished or had been cancelled.",
+            security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/miss")
     public EntityModel<Event> missEvent(@PathVariable UUID eventId) {
         Event event = eventService.removeAttendee(eventId);
