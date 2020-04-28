@@ -13,6 +13,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,6 +72,7 @@ public class EventController {
                     "Respond with 403 if there is no logged in user.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventInput eventInput) {
         Event event = eventService.createEvent(eventInput);
         EntityModel<Event> entityModel = eventModelAssembler.toModel(event);
