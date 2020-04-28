@@ -9,6 +9,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +54,7 @@ public class EventController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createEvent(@Valid @RequestBody EventInput eventInput) {
         Event event = eventService.createEvent(eventInput);
         EntityModel<Event> entityModel = eventModelAssembler.toModel(event);
