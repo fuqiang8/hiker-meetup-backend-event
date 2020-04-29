@@ -2,7 +2,6 @@ package com.aws.codestar.hikermeetup.event.web;
 
 import com.aws.codestar.hikermeetup.event.data.Event;
 import com.aws.codestar.hikermeetup.event.services.EventService;
-import com.aws.codestar.hikermeetup.member.services.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.*;
@@ -33,28 +32,22 @@ public class EventController {
     private final EventModelAssembler eventModelAssembler;
     private final PagedResourcesAssembler<Event> pagedResourcesAssembler;
 
-    private final MemberService memberService;
-
-    private static UUID uuid = UUID.fromString("ab8fba95-bb48-407b-8f74-e7f368e473d9");
-
     /*
     * TODO: ALL EVENTS REQUIRE USER INFO.
     *  updateEvent, startEvent, cancelEvent should be organizer only.
     * */
     public EventController(EventService eventService,
                            EventModelAssembler eventModelAssembler,
-                           PagedResourcesAssembler<Event> pagedResourcesAssembler,
-                           MemberService memberService) {
+                           PagedResourcesAssembler<Event> pagedResourcesAssembler) {
         this.eventService = eventService;
         this.eventModelAssembler = eventModelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
-        this.memberService = memberService;
     }
 
     @Operation(summary = "Get events in a pageable format",
             description = "Retrieves all events. Defaults to 20 records per page unless specified otherwise in the request. ")
     @GetMapping
-    public PagedModel<EntityModel<Event>> getEvents(Pageable pageable) {
+    public PagedModel<EntityModel<EventOutput>> getEvents(Pageable pageable) {
         Page<Event> eventPage = eventService.getEvents(pageable);
         return pagedResourcesAssembler.toModel(eventPage, eventModelAssembler);
     }
@@ -62,7 +55,7 @@ public class EventController {
     @Operation(summary = "Get event by eventId",
             description = "Get the event by eventId. Respond with 404 if not found.")
     @GetMapping("/{eventId}")
-    public EntityModel<Event> getEvent(@PathVariable UUID eventId) {
+    public EntityModel<EventOutput> getEvent(@PathVariable UUID eventId) {
         Event event = eventService.getEvent(eventId);
         return eventModelAssembler.toModel(event);
     }
@@ -73,9 +66,9 @@ public class EventController {
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> createEvent(@Valid @RequestBody EventInput eventInput) {
+    public ResponseEntity<EntityModel<EventOutput>> createEvent(@Valid @RequestBody EventInput eventInput) {
         Event event = eventService.createEvent(eventInput);
-        EntityModel<Event> entityModel = eventModelAssembler.toModel(event);
+        EntityModel<EventOutput> entityModel = eventModelAssembler.toModel(event);
 
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -86,7 +79,7 @@ public class EventController {
             description = "Respond with 403 if there is no logged in user / logged in user is not the event's organizer.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PatchMapping("/{eventId}")
-    public EntityModel<Event> updateEvent(@PathVariable UUID eventId,
+    public EntityModel<EventOutput> updateEvent(@PathVariable UUID eventId,
                                           @RequestBody EventInput eventInput) {
         Event event = eventService.updateEvent(eventId, eventInput);
         return eventModelAssembler.toModel(event);
@@ -97,7 +90,7 @@ public class EventController {
                     "Respond with 422 if event had started, finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/start")
-    public EntityModel<Event> startEvent(@PathVariable UUID eventId) {
+    public EntityModel<?> startEvent(@PathVariable UUID eventId) {
         Event event = eventService.startEvent(eventId);
         return eventModelAssembler.toModel(event);
     }
@@ -107,7 +100,7 @@ public class EventController {
                     "Respond with 422 if event had finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/cancel")
-    public EntityModel<Event> cancelEvent(@PathVariable UUID eventId) {
+    public EntityModel<?> cancelEvent(@PathVariable UUID eventId) {
         Event event = eventService.cancelEvent(eventId);
         return eventModelAssembler.toModel(event);
     }
@@ -118,7 +111,7 @@ public class EventController {
                     "Respond with 422 if event had started, finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/like")
-    public EntityModel<Event> likeEvent(@PathVariable UUID eventId) {
+    public EntityModel<EventOutput> likeEvent(@PathVariable UUID eventId) {
         Event event = eventService.addFollower(eventId);
         return eventModelAssembler.toModel(event);
     }
@@ -129,7 +122,7 @@ public class EventController {
                     "Respond with 422 if event had started, finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/unlike")
-    public EntityModel<Event> unlikeEvent(@PathVariable UUID eventId) {
+    public EntityModel<EventOutput> unlikeEvent(@PathVariable UUID eventId) {
         Event event = eventService.removeFollower(eventId);
         return eventModelAssembler.toModel(event);
     }
@@ -140,7 +133,7 @@ public class EventController {
                     "Respond with 422 if event had started, finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/attend")
-    public EntityModel<Event> attendEvent(@PathVariable UUID eventId) {
+    public EntityModel<EventOutput> attendEvent(@PathVariable UUID eventId) {
         Event event = eventService.addAttendee(eventId);
         return eventModelAssembler.toModel(event);
     }
@@ -151,7 +144,7 @@ public class EventController {
                     "Respond with 422 if event had started, finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
     @PostMapping("/{eventId}/miss")
-    public EntityModel<Event> missEvent(@PathVariable UUID eventId) {
+    public EntityModel<EventOutput> missEvent(@PathVariable UUID eventId) {
         Event event = eventService.removeAttendee(eventId);
         return eventModelAssembler.toModel(event);
     }
