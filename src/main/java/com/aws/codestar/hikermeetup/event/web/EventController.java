@@ -2,7 +2,6 @@ package com.aws.codestar.hikermeetup.event.web;
 
 import com.aws.codestar.hikermeetup.event.data.Event;
 import com.aws.codestar.hikermeetup.event.services.EventService;
-import com.aws.codestar.hikermeetup.member.services.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -23,22 +22,16 @@ public class EventController {
     private final EventModelAssembler eventModelAssembler;
     private final PagedResourcesAssembler<Event> pagedResourcesAssembler;
 
-    private final MemberService memberService;
-
-    private static UUID uuid = UUID.fromString("ab8fba95-bb48-407b-8f74-e7f368e473d9");
-
     /*
     * TODO: ALL EVENTS REQUIRE USER INFO.
     *  updateEvent, startEvent, cancelEvent should be organizer only.
     * */
     public EventController(EventService eventService,
                            EventModelAssembler eventModelAssembler,
-                           PagedResourcesAssembler<Event> pagedResourcesAssembler,
-                           MemberService memberService) {
+                           PagedResourcesAssembler<Event> pagedResourcesAssembler) {
         this.eventService = eventService;
         this.eventModelAssembler = eventModelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
-        this.memberService = memberService;
     }
 
     @GetMapping
