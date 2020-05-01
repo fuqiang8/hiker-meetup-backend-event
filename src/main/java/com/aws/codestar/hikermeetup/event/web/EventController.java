@@ -1,9 +1,15 @@
 package com.aws.codestar.hikermeetup.event.web;
 
+import com.aws.codestar.hikermeetup.base.ErrorMessage;
 import com.aws.codestar.hikermeetup.event.data.Event;
 import com.aws.codestar.hikermeetup.event.services.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -46,6 +52,7 @@ public class EventController {
 
     @Operation(summary = "Get events in a pageable format",
             description = "Retrieves all events. Defaults to 20 records per page unless specified otherwise in the request. ")
+    @ApiResponse(responseCode = "200", description = "Successful operation")
     @GetMapping
     public PagedModel<EntityModel<EventOutput>> getEvents(Pageable pageable) {
         Page<Event> eventPage = eventService.getEvents(pageable);
@@ -54,6 +61,10 @@ public class EventController {
 
     @Operation(summary = "Get event by eventId",
             description = "Get the event by eventId. Respond with 404 if not found.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "404", description = "Event not found",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class)))) })
     @GetMapping("/{eventId}")
     public EntityModel<EventOutput> getEvent(@PathVariable UUID eventId) {
         Event event = eventService.getEvent(eventId);
@@ -64,6 +75,10 @@ public class EventController {
             description = "Create event with logged in user as the organizer. " +
                     "Respond with 403 if there is no logged in user.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Successful operation"),
+            @ApiResponse(responseCode = "403", description = "Require user login",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class)))) })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<EntityModel<EventOutput>> createEvent(@Valid @RequestBody EventInput eventInput) {
@@ -78,6 +93,10 @@ public class EventController {
     @Operation(summary = "Update existing event",
             description = "Respond with 403 if there is no logged in user / logged in user is not the event's organizer.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "403", description = "Require user login / User is not the event's organizer",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class)))) })
     @PatchMapping("/{eventId}")
     public EntityModel<EventOutput> updateEvent(@PathVariable UUID eventId,
                                           @RequestBody EventInput eventInput) {
@@ -89,6 +108,12 @@ public class EventController {
             description = "Respond with 403 if there is no logged in user / logged in user is not the event's organizer. " +
                     "Respond with 422 if event had started, finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "403", description = "Require user login / User is not the event's organizer",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class)))),
+            @ApiResponse(responseCode = "422", description = "Event had started, finished or had been cancelled.",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class))))})
     @PostMapping("/{eventId}/start")
     public EntityModel<?> startEvent(@PathVariable UUID eventId) {
         Event event = eventService.startEvent(eventId);
@@ -99,6 +124,12 @@ public class EventController {
             description = "Respond with 403 if there is no logged in user / logged in user is not the event's organizer. " +
                     "Respond with 422 if event had finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "403", description = "Require user login / User is not the event's organizer",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class)))),
+            @ApiResponse(responseCode = "422", description = "Event had finished or had been cancelled.",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class))))})
     @PostMapping("/{eventId}/cancel")
     public EntityModel<?> cancelEvent(@PathVariable UUID eventId) {
         Event event = eventService.cancelEvent(eventId);
@@ -110,6 +141,12 @@ public class EventController {
                     "Respond with 403 if there is no logged in user. " +
                     "Respond with 422 if event had started, finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "403", description = "Require user login",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class)))),
+            @ApiResponse(responseCode = "422", description = "Event had started, finished or had been cancelled.",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class))))})
     @PostMapping("/{eventId}/like")
     public EntityModel<EventOutput> likeEvent(@PathVariable UUID eventId) {
         Event event = eventService.addFollower(eventId);
@@ -121,6 +158,12 @@ public class EventController {
                     "Respond with 403 if there is no logged in user. " +
                     "Respond with 422 if event had started, finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "403", description = "Require user login",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class)))),
+            @ApiResponse(responseCode = "422", description = "Event had started, finished or had been cancelled.",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class))))})
     @PostMapping("/{eventId}/unlike")
     public EntityModel<EventOutput> unlikeEvent(@PathVariable UUID eventId) {
         Event event = eventService.removeFollower(eventId);
@@ -132,6 +175,12 @@ public class EventController {
                     "Respond with 403 if there is no logged in user. " +
                     "Respond with 422 if event had started, finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "403", description = "Require user login",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class)))),
+            @ApiResponse(responseCode = "422", description = "Event had started, finished or had been cancelled.",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class))))})
     @PostMapping("/{eventId}/attend")
     public EntityModel<EventOutput> attendEvent(@PathVariable UUID eventId) {
         Event event = eventService.addAttendee(eventId);
@@ -143,6 +192,12 @@ public class EventController {
                     "Respond with 403 if there is no logged in user. " +
                     "Respond with 422 if event had started, finished or had been cancelled.",
             security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "403", description = "Require user login",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class)))),
+            @ApiResponse(responseCode = "422", description = "Event had started, finished or had been cancelled.",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class))))})
     @PostMapping("/{eventId}/miss")
     public EntityModel<EventOutput> missEvent(@PathVariable UUID eventId) {
         Event event = eventService.removeAttendee(eventId);
