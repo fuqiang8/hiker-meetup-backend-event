@@ -281,6 +281,7 @@ class EventServiceTest {
 
     @Test
     void addFollower_EventPending() {
+        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 2,0);
 
         Event result = eventService.addFollower(UUID.randomUUID());
@@ -289,6 +290,7 @@ class EventServiceTest {
 
     @Test
     void addFollower_EventGreenLit() {
+        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, 2,0);
 
         Event result = eventService.addFollower(UUID.randomUUID());
@@ -393,6 +395,7 @@ class EventServiceTest {
 
     @Test
     void addAttendee_PendingToGreenLit() {
+        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 0,2, 3);
 
         Event result = eventService.addAttendee(UUID.randomUUID());
@@ -402,6 +405,7 @@ class EventServiceTest {
 
     @Test
     void addAttendee_EventPending() {
+        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 0,2, 4);
 
         Event result = eventService.addAttendee(UUID.randomUUID());
@@ -411,6 +415,7 @@ class EventServiceTest {
 
     @Test
     void addAttendee_EventGreenLit() {
+        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, 0,2, 2);
 
         Event result = eventService.addAttendee(UUID.randomUUID());
@@ -537,6 +542,8 @@ class EventServiceTest {
     private Member generateMember(String name) {
         Member member = new Member(UUID.randomUUID(), name);
         ReflectionTestUtils.setField(member, "id", UUID.randomUUID());
+        member.setAttended(new ArrayList<>());
+        member.setFollowed(new ArrayList<>());
         return member;
     }
 

@@ -96,6 +96,7 @@ public class EventService {
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
         Member member = memberService.getOrCreateCurrentMember();
+        member.getFollowed().add(event);
         event.getFollowers().add(member);
 
         return eventRepository.save(event);
@@ -106,6 +107,7 @@ public class EventService {
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
         Member member = memberService.getOrCreateCurrentMember();
+        member.getFollowed().remove(event);
         event.getFollowers().remove(member);
 
         return eventRepository.save(event);
@@ -116,6 +118,7 @@ public class EventService {
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
         Member member = memberService.getOrCreateCurrentMember();
+        member.getAttended().add(event);
         event.getAttendees().add(member);
 
         EventStatus eventStatus = event.getAttendees().size() >= event.getMinAttendees() ?
@@ -132,6 +135,7 @@ public class EventService {
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
         Member member = memberService.getOrCreateCurrentMember();
+        member.getAttended().remove(event);
         event.getAttendees().remove(member);
 
         EventStatus eventStatus = event.getAttendees().size() >= event.getMinAttendees() ?
