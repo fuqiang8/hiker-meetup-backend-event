@@ -1,9 +1,10 @@
 Hiker's Meetup
 ==================================================
 
-The Ultimate Hiking Hiker's Platform v0.1.
+The Ultimate Hiking Hiker's Platform v0.2.
 
 - Added Unit tests for Events & Members.
+- Added Swagger for the endpoints.
 
 Why v0?
 -----------
