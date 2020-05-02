@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public interface EventOutput {
+    UUID getId();
+
     @Value("#{target.getOrganizer() == null ? '' : target.getOrganizer().getName() ?: ''}")
     String getOrganizer();
 
