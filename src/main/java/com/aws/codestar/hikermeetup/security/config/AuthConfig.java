@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 /**
  * Configuration for web security
@@ -30,7 +31,8 @@ public class AuthConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers("/events/**").authenticated()
                 .and()
-            .csrf().disable()
-            .cors().disable();
+            .cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+                .and()
+            .csrf().disable();
     }
 }
