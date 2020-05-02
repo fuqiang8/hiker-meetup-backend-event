@@ -30,6 +30,7 @@ public class AuthConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers("/events/**").authenticated()
                 .and()
-            .csrf().disable();
+            .csrf().disable()
+            .cors().disable();
     }
 }
