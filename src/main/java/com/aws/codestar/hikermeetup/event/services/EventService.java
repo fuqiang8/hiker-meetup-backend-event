@@ -104,7 +104,9 @@ public class EventService {
             followers = new ArrayList<>();
             event.setFollowers(followers);
         }
-        followers.add(member);
+
+        if (!followers.contains(member))
+            followers.add(member);
 
         return eventRepository.save(event);
     }
@@ -134,7 +136,9 @@ public class EventService {
             attendees = new ArrayList<>();
             event.setAttendees(attendees);
         }
-        attendees.add(member);
+
+        if (!attendees.contains(member))
+            attendees.add(member);
 
         setEventStatusByAttendees(event);
 
