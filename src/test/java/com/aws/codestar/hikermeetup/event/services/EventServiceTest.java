@@ -543,8 +543,6 @@ class EventServiceTest {
     private Member generateMember(String name) {
         Member member = new Member(UUID.randomUUID(), name, "email");
         ReflectionTestUtils.setField(member, "id", UUID.randomUUID());
-        member.setAttended(new ArrayList<>());
-        member.setFollowed(new ArrayList<>());
         return member;
     }
 
