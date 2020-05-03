@@ -5,6 +5,7 @@ The Ultimate Hiking Hiker's Platform v0.2.
 
 - Added Unit tests for Events & Members.
 - Added Swagger for the endpoints.
+- Changed database from H2 to DynamoDB.
 
 Why v0?
 -----------
