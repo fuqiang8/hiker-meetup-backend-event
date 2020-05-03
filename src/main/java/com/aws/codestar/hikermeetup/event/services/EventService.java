@@ -129,7 +129,7 @@ public class EventService {
 
         Member member = memberService.getOrCreateCurrentMember();
 
-        List<Member> attendees = event.getFollowers();
+        List<Member> attendees = event.getAttendees();
         if (attendees == null) {
             attendees = new ArrayList<>();
             event.setAttendees(attendees);
@@ -147,7 +147,7 @@ public class EventService {
 
         Member member = memberService.getOrCreateCurrentMember();
 
-        List<Member> attendees = event.getFollowers();
+        List<Member> attendees = event.getAttendees();
         if (attendees != null) {
             attendees.remove(member);
         }
