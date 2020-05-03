@@ -1,5 +1,6 @@
 package com.aws.codestar.hikermeetup.event.services;
 
+import com.aws.codestar.hikermeetup.base.EntityNotFoundException;
 import com.aws.codestar.hikermeetup.base.PatchModelMapper;
 import com.aws.codestar.hikermeetup.event.data.Event;
 import com.aws.codestar.hikermeetup.event.data.EventRepository;
@@ -14,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.UUID;
 
