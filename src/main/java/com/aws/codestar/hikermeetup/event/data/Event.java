@@ -6,7 +6,7 @@ import com.aws.codestar.hikermeetup.member.data.Member;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @DynamoDBTable(tableName = "Events")
@@ -16,10 +16,10 @@ public class Event {
     private Member organizer;
 
     // Sign up
-    private Set<Member> attendees;
+    private List<Member> attendees;
 
     // Interest
-    private Set<Member> followers;
+    private List<Member> followers;
 
     @NotNull
     private EventStatus eventStatus;
@@ -70,20 +70,20 @@ public class Event {
     }
 
     @DynamoDBAttribute
-    public Set<Member> getAttendees() {
+    public List<Member> getAttendees() {
         return attendees;
     }
 
-    public void setAttendees(Set<Member> attendees) {
+    public void setAttendees(List<Member> attendees) {
         this.attendees = attendees;
     }
 
     @DynamoDBAttribute
-    public Set<Member> getFollowers() {
+    public List<Member> getFollowers() {
         return followers;
     }
 
-    public void setFollowers(Set<Member> followers) {
+    public void setFollowers(List<Member> followers) {
         this.followers = followers;
     }
 

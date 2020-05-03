@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -99,9 +99,9 @@ public class EventService {
 
         Member member = memberService.getOrCreateCurrentMember();
 
-        Set<Member> followers = event.getFollowers();
+        List<Member> followers = event.getFollowers();
         if (followers == null) {
-            followers = new HashSet<>();
+            followers = new ArrayList<>();
             event.setFollowers(followers);
         }
         followers.add(member);
@@ -115,7 +115,7 @@ public class EventService {
 
         Member member = memberService.getOrCreateCurrentMember();
 
-        Set<Member> followers = event.getFollowers();
+        List<Member> followers = event.getFollowers();
         if (followers != null) {
             followers.remove(member);
         }
@@ -129,9 +129,9 @@ public class EventService {
 
         Member member = memberService.getOrCreateCurrentMember();
 
-        Set<Member> attendees = event.getFollowers();
+        List<Member> attendees = event.getFollowers();
         if (attendees == null) {
-            attendees = new HashSet<>();
+            attendees = new ArrayList<>();
             event.setAttendees(attendees);
         }
         attendees.add(member);
@@ -147,7 +147,7 @@ public class EventService {
 
         Member member = memberService.getOrCreateCurrentMember();
 
-        Set<Member> attendees = event.getFollowers();
+        List<Member> attendees = event.getFollowers();
         if (attendees != null) {
             attendees.remove(member);
         }

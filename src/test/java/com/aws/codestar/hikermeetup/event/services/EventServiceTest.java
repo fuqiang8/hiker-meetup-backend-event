@@ -334,12 +334,12 @@ class EventServiceTest {
     @Test
     void removeFollower_EventPending() {
         Member current = generateMember("current");
-        HashSet followers = new HashSet();
+        ArrayList followers = new ArrayList();
         followers.add(current);
         followers.add(generateMember("follower1"));
 
         when(memberService.getOrCreateCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, followers, Collections.EMPTY_SET);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, followers, Collections.EMPTY_LIST);
 
         Event result = eventService.removeFollower(UUID.randomUUID());
         assertEquals(1, result.getFollowers().size());
@@ -349,12 +349,12 @@ class EventServiceTest {
     @Test
     void removeFollower_EventGreenLit() {
         Member current = generateMember("current");
-        HashSet followers = new HashSet();
+        ArrayList followers = new ArrayList();
         followers.add(current);
         followers.add(generateMember("follower1"));
 
         when(memberService.getOrCreateCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, followers, Collections.EMPTY_SET);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, followers, Collections.EMPTY_LIST);
 
         Event result = eventService.removeFollower(UUID.randomUUID());
         assertEquals(1, result.getFollowers().size());
@@ -459,13 +459,13 @@ class EventServiceTest {
     @Test
     void removeAttendee_GreenLitToPending() {
         Member current = generateMember("current");
-        HashSet attendees = new HashSet();
+        ArrayList attendees = new ArrayList();
         attendees.add(current);
         attendees.add(generateMember("attendee1"));
         attendees.add(generateMember("attendee2"));
 
         when(memberService.getOrCreateCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_SET, attendees, 3);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_LIST, attendees, 3);
 
         Event result = eventService.removeAttendee(UUID.randomUUID());
         assertEquals(2, result.getAttendees().size());
@@ -476,12 +476,12 @@ class EventServiceTest {
     @Test
     void removeAttendee_EventPending() {
         Member current = generateMember("current");
-        HashSet attendees = new HashSet();
+        ArrayList attendees = new ArrayList();
         attendees.add(current);
         attendees.add(generateMember("attendee1"));
 
         when(memberService.getOrCreateCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, Collections.EMPTY_SET, attendees, 3);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, Collections.EMPTY_LIST, attendees, 3);
 
         Event result = eventService.removeAttendee(UUID.randomUUID());
         assertEquals(1, result.getAttendees().size());
@@ -492,14 +492,14 @@ class EventServiceTest {
     @Test
     void removeAttendee_EventGreenLit() {
         Member current = generateMember("current");
-        HashSet attendees = new HashSet();
+        ArrayList attendees = new ArrayList();
         attendees.add(current);
         attendees.add(generateMember("attendee1"));
         attendees.add(generateMember("attendee2"));
         attendees.add(generateMember("attendee3"));
 
         when(memberService.getOrCreateCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_SET, attendees, 3);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_LIST, attendees, 3);
 
         Event result = eventService.removeAttendee(UUID.randomUUID());
         assertEquals(3, result.getAttendees().size());
@@ -563,17 +563,17 @@ class EventServiceTest {
         setupSuccessfulEventRetrieval(organizer, currentEventStatus, followersCount, attendeesCount, 0);
     }
 
-    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, Set<Member> followers, Set<Member> attendees) {
+    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, List<Member> followers, List<Member> attendees) {
         setupSuccessfulEventRetrieval(organizer, currentEventStatus, followers, attendees, 0);
     }
 
     private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, int followersCount, int attendeesCount, int minAttendees) {
-        Set<Member> followers = new HashSet<>();
+        List<Member> followers = new ArrayList<>();
         for (int i = 0; i < followersCount; i++) {
             followers.add(generateMember("follower" + i));
         }
 
-        Set<Member> attendees = new HashSet<>();
+        List<Member> attendees = new ArrayList<>();
         for (int i = 0; i < attendeesCount; i++) {
             attendees.add(generateMember("attendee" + i));
         }
@@ -581,7 +581,7 @@ class EventServiceTest {
         setupSuccessfulEventRetrieval(organizer, currentEventStatus, followers, attendees, minAttendees);
     }
 
-    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, Set<Member> followers, Set<Member> attendees, int minAttendees) {
+    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, List<Member> followers, List<Member> attendees, int minAttendees) {
         Event event = new Event(organizer);
         event.setFollowers(followers);
         event.setAttendees(attendees);
