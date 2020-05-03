@@ -32,14 +32,16 @@ public class MemberServiceTest {
 
     private final UUID EXTERNAL_ID = UUID.randomUUID();
     private final String EXISTING_NAME = "existingGiven, existingFamily";
+    private final String EXISTING_EMAIL = "existingEmail";
     private final String NEW_GIVEN_NAME = "newGiven";
     private final String NEW_FAMILY_NAME = "newFamily";
+    private final String NEW_EMAIL = "newEmail";
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        existingUser = new Member(EXTERNAL_ID, EXISTING_NAME);
+        existingUser = new Member(EXTERNAL_ID, EXISTING_NAME, EXISTING_EMAIL);
 
         when(memberRepository.findByExternalIamId(any(UUID.class)))
                 .thenAnswer(i -> {
@@ -47,7 +49,7 @@ public class MemberServiceTest {
                         return Optional.of(existingUser);
                     }
                     else {
-                        Member newMember = new Member(i.getArgument(0), String.format("%s, %s", NEW_GIVEN_NAME, NEW_FAMILY_NAME));
+                        Member newMember = new Member(i.getArgument(0), String.format("%s, %s", NEW_GIVEN_NAME, NEW_FAMILY_NAME), NEW_EMAIL);
                         ReflectionTestUtils.setField(newMember, "id", UUID.randomUUID());
 
                         return Optional.of(newMember);
