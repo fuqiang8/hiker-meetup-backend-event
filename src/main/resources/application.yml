@@ -6,3 +6,8 @@ endpoints:
 
 cognito:
   keys: https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_Krx5EBNva/.well-known/jwks.json       # url for cognito jwt keys
+
+dynamodb:
+  endpoint: dynamodb.ap-southeast-1.amazonaws.com
+  accesskey: AKIA4RJFROMUNRIJRVN3
+  secretkey: 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

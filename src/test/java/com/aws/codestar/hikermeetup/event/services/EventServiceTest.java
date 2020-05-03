@@ -20,7 +20,6 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
@@ -53,15 +52,23 @@ class EventServiceTest {
     }
 
     @Test
-    void createEvent() {
+    void createEvent_ZeroMinAttendees() {
         Event result = eventService.createEvent(new EventInput());
-        assertEquals(EventStatus.PENDING, result.getEventStatus());
+        assertEquals(EventStatus.GREENLIT, result.getEventStatus());
+    }
+
+    @Test
+    void createEvent_MoreThanZeroMinAttendees() {
+        EventInput eventInput = new EventInput();
+        eventInput.setMinAttendees(1);
+        Event result = eventService.createEvent(eventInput);
+        assertEquals(EventStatus.GREENLIT, result.getEventStatus());
     }
 
     @Test
     void updateEvent_DecreaseMinAttendeeToGreenLit() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING, 0, 5);
         setupMinAttendeeMapper();
 
@@ -77,7 +84,7 @@ class EventServiceTest {
     @Test()
     void updateEvent_IncreaseMinAttendeeToPending() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.GREENLIT, 0, 5);
         setupMinAttendeeMapper();
 
@@ -93,7 +100,7 @@ class EventServiceTest {
     @Test
     void updateEvent_MatchMinAttendeeToGreenLit() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING, 0, 5);
         setupMinAttendeeMapper();
 
@@ -141,7 +148,7 @@ class EventServiceTest {
 
     @Test
     void updateEvent_NotOrganizer() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING);
 
         Exception exception = assertThrows(NotEventOrganizerException.class, () -> {
@@ -154,7 +161,7 @@ class EventServiceTest {
     @Test
     void startEvent_EventPending() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING);
 
         Event result = eventService.startEvent(UUID.randomUUID());
@@ -164,7 +171,7 @@ class EventServiceTest {
     @Test
     void startEvent_EventGreenLit() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.GREENLIT);
 
         Event result = eventService.startEvent(UUID.randomUUID());
@@ -206,7 +213,7 @@ class EventServiceTest {
 
     @Test
     void startEvent_NotOrganizer() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING);
 
         Exception exception = assertThrows(NotEventOrganizerException.class, () -> {
@@ -219,7 +226,7 @@ class EventServiceTest {
     @Test
     void cancelEvent_EventPending() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING);
 
         Event result = eventService.cancelEvent(UUID.randomUUID());
@@ -229,7 +236,7 @@ class EventServiceTest {
     @Test
     void cancelEvent_EventGreenLit() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.GREENLIT);
 
         Event result = eventService.cancelEvent(UUID.randomUUID());
@@ -239,7 +246,7 @@ class EventServiceTest {
     @Test
     void cancelEvent_EventStarted() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.STARTED);
 
         Event result = eventService.cancelEvent(UUID.randomUUID());
@@ -270,7 +277,7 @@ class EventServiceTest {
 
     @Test
     void cancelEvent_NotOrganizer() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING);
 
         Exception exception = assertThrows(NotEventOrganizerException.class, () -> {
@@ -282,7 +289,7 @@ class EventServiceTest {
 
     @Test
     void addFollower_EventPending() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 2,0);
 
         Event result = eventService.addFollower(UUID.randomUUID());
@@ -291,7 +298,7 @@ class EventServiceTest {
 
     @Test
     void addFollower_EventGreenLit() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, 2,0);
 
         Event result = eventService.addFollower(UUID.randomUUID());
@@ -334,12 +341,12 @@ class EventServiceTest {
     @Test
     void removeFollower_EventPending() {
         Member current = generateMember("current");
-        HashSet followers = new HashSet();
+        ArrayList followers = new ArrayList();
         followers.add(current);
         followers.add(generateMember("follower1"));
 
-        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, followers, Collections.EMPTY_SET);
+        when(memberService.getCurrentMember()).thenReturn(current);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, followers, Collections.EMPTY_LIST);
 
         Event result = eventService.removeFollower(UUID.randomUUID());
         assertEquals(1, result.getFollowers().size());
@@ -349,12 +356,12 @@ class EventServiceTest {
     @Test
     void removeFollower_EventGreenLit() {
         Member current = generateMember("current");
-        HashSet followers = new HashSet();
+        ArrayList followers = new ArrayList();
         followers.add(current);
         followers.add(generateMember("follower1"));
 
-        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, followers, Collections.EMPTY_SET);
+        when(memberService.getCurrentMember()).thenReturn(current);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, followers, Collections.EMPTY_LIST);
 
         Event result = eventService.removeFollower(UUID.randomUUID());
         assertEquals(1, result.getFollowers().size());
@@ -396,7 +403,7 @@ class EventServiceTest {
 
     @Test
     void addAttendee_PendingToGreenLit() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 0,2, 3);
 
         Event result = eventService.addAttendee(UUID.randomUUID());
@@ -406,7 +413,7 @@ class EventServiceTest {
 
     @Test
     void addAttendee_EventPending() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 0,2, 4);
 
         Event result = eventService.addAttendee(UUID.randomUUID());
@@ -416,7 +423,7 @@ class EventServiceTest {
 
     @Test
     void addAttendee_EventGreenLit() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, 0,2, 2);
 
         Event result = eventService.addAttendee(UUID.randomUUID());
@@ -459,13 +466,13 @@ class EventServiceTest {
     @Test
     void removeAttendee_GreenLitToPending() {
         Member current = generateMember("current");
-        HashSet attendees = new HashSet();
+        ArrayList attendees = new ArrayList();
         attendees.add(current);
         attendees.add(generateMember("attendee1"));
         attendees.add(generateMember("attendee2"));
 
-        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_SET, attendees, 3);
+        when(memberService.getCurrentMember()).thenReturn(current);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_LIST, attendees, 3);
 
         Event result = eventService.removeAttendee(UUID.randomUUID());
         assertEquals(2, result.getAttendees().size());
@@ -476,12 +483,12 @@ class EventServiceTest {
     @Test
     void removeAttendee_EventPending() {
         Member current = generateMember("current");
-        HashSet attendees = new HashSet();
+        ArrayList attendees = new ArrayList();
         attendees.add(current);
         attendees.add(generateMember("attendee1"));
 
-        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, Collections.EMPTY_SET, attendees, 3);
+        when(memberService.getCurrentMember()).thenReturn(current);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, Collections.EMPTY_LIST, attendees, 3);
 
         Event result = eventService.removeAttendee(UUID.randomUUID());
         assertEquals(1, result.getAttendees().size());
@@ -492,14 +499,14 @@ class EventServiceTest {
     @Test
     void removeAttendee_EventGreenLit() {
         Member current = generateMember("current");
-        HashSet attendees = new HashSet();
+        ArrayList attendees = new ArrayList();
         attendees.add(current);
         attendees.add(generateMember("attendee1"));
         attendees.add(generateMember("attendee2"));
         attendees.add(generateMember("attendee3"));
 
-        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_SET, attendees, 3);
+        when(memberService.getCurrentMember()).thenReturn(current);
+        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_LIST, attendees, 3);
 
         Event result = eventService.removeAttendee(UUID.randomUUID());
         assertEquals(3, result.getAttendees().size());
@@ -542,9 +549,6 @@ class EventServiceTest {
 
     private Member generateMember(String name) {
         Member member = new Member(UUID.randomUUID(), name, "email");
-        ReflectionTestUtils.setField(member, "id", UUID.randomUUID());
-        member.setAttended(new ArrayList<>());
-        member.setFollowed(new ArrayList<>());
         return member;
     }
 
@@ -565,17 +569,17 @@ class EventServiceTest {
         setupSuccessfulEventRetrieval(organizer, currentEventStatus, followersCount, attendeesCount, 0);
     }
 
-    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, Set<Member> followers, Set<Member> attendees) {
+    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, List<Member> followers, List<Member> attendees) {
         setupSuccessfulEventRetrieval(organizer, currentEventStatus, followers, attendees, 0);
     }
 
     private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, int followersCount, int attendeesCount, int minAttendees) {
-        Set<Member> followers = new HashSet<>();
+        List<Member> followers = new ArrayList<>();
         for (int i = 0; i < followersCount; i++) {
             followers.add(generateMember("follower" + i));
         }
 
-        Set<Member> attendees = new HashSet<>();
+        List<Member> attendees = new ArrayList<>();
         for (int i = 0; i < attendeesCount; i++) {
             attendees.add(generateMember("attendee" + i));
         }
@@ -583,7 +587,7 @@ class EventServiceTest {
         setupSuccessfulEventRetrieval(organizer, currentEventStatus, followers, attendees, minAttendees);
     }
 
-    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, Set<Member> followers, Set<Member> attendees, int minAttendees) {
+    private void setupSuccessfulEventRetrieval(Member organizer, EventStatus currentEventStatus, List<Member> followers, List<Member> attendees, int minAttendees) {
         Event event = new Event(organizer);
         event.setFollowers(followers);
         event.setAttendees(attendees);

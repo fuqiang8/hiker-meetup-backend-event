@@ -1,26 +1,13 @@
 package com.aws.codestar.hikermeetup.member.data;
 
-import com.aws.codestar.hikermeetup.event.data.Event;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-@Entity
+@DynamoDBDocument
 public class Member {
-    @Id
-    @GeneratedValue
-    private UUID id;
-
-    @ManyToMany
-    private List<Event> attended;
-
-    @ManyToMany
-    private List<Event> followed;
 
     private UUID externalIamId;
 
@@ -37,36 +24,31 @@ public class Member {
         this.email = email;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public List<Event> getAttended() {
-        return attended;
-    }
-
-    public void setAttended(List<Event> attended) {
-        this.attended = attended;
-    }
-
-    public List<Event> getFollowed() {
-        return followed;
-    }
-
-    public void setFollowed(List<Event> followed) {
-        this.followed = followed;
-    }
-
+    @DynamoDBAttribute
     public UUID getExternalIamId() {
         return externalIamId;
     }
 
+    public void setExternalIamId(UUID externalIamId) {
+        this.externalIamId = externalIamId;
+    }
+
+    @DynamoDBAttribute
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @DynamoDBAttribute
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
@@ -74,12 +56,11 @@ public class Member {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
-        return id.equals(member.id) &&
-                externalIamId.equals(member.externalIamId);
+        return externalIamId.equals(member.externalIamId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(externalIamId);
     }
 }
