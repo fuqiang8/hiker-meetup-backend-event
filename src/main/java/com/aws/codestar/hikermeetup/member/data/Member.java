@@ -26,12 +26,15 @@ public class Member {
 
     private String name;
 
+    private String email;
+
     public Member() {
     }
 
-    public Member(UUID externalIamId, String name) {
+    public Member(UUID externalIamId, String name, String email) {
         this.externalIamId = externalIamId;
         this.name = name;
+        this.email = email;
     }
 
     public UUID getId() {
@@ -60,6 +63,10 @@ public class Member {
 
     public String getName() {
         return name;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     @Override

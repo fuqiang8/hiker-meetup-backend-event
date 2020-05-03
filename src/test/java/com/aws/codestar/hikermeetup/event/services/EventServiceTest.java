@@ -20,6 +20,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
@@ -540,7 +541,7 @@ class EventServiceTest {
     }
 
     private Member generateMember(String name) {
-        Member member = new Member(UUID.randomUUID(), name);
+        Member member = new Member(UUID.randomUUID(), name, "email");
         ReflectionTestUtils.setField(member, "id", UUID.randomUUID());
         member.setAttended(new ArrayList<>());
         member.setFollowed(new ArrayList<>());
