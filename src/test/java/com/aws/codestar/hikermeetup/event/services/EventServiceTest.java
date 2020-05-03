@@ -20,7 +20,6 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
@@ -53,9 +52,17 @@ class EventServiceTest {
     }
 
     @Test
-    void createEvent() {
+    void createEvent_ZeroMinAttendees() {
         Event result = eventService.createEvent(new EventInput());
-        assertEquals(EventStatus.PENDING, result.getEventStatus());
+        assertEquals(EventStatus.GREENLIT, result.getEventStatus());
+    }
+
+    @Test
+    void createEvent_MoreThanZeroMinAttendees() {
+        EventInput eventInput = new EventInput();
+        eventInput.setMinAttendees(1);
+        Event result = eventService.createEvent(eventInput);
+        assertEquals(EventStatus.GREENLIT, result.getEventStatus());
     }
 
     @Test
@@ -542,7 +549,6 @@ class EventServiceTest {
 
     private Member generateMember(String name) {
         Member member = new Member(UUID.randomUUID(), name, "email");
-        ReflectionTestUtils.setField(member, "id", UUID.randomUUID());
         return member;
     }
 
