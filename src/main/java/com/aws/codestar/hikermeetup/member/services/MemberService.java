@@ -25,13 +25,14 @@ public class MemberService {
 
         UUID externalIamId = userInfo.getSub();
         String name = String.format("%s, %s", userInfo.getGiven_name(), userInfo.getFamily_name());
+        String email = userInfo.getEmail();
 
         return memberRepository.findByExternalIamId(externalIamId)
-                .orElseGet(() -> createMember(externalIamId,name));
+                .orElseGet(() -> createMember(externalIamId, name, email));
     }
 
-    private Member createMember(UUID externalIamId, String name) {
-        Member member = new Member(externalIamId, name);
+    private Member createMember(UUID externalIamId, String name, String email) {
+        Member member = new Member(externalIamId, name, email);
 
         return memberRepository.save(member);
     }

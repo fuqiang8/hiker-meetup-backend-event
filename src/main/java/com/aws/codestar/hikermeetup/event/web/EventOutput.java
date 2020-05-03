@@ -1,6 +1,7 @@
 package com.aws.codestar.hikermeetup.event.web;
 
 import com.aws.codestar.hikermeetup.event.data.EventStatus;
+import com.aws.codestar.hikermeetup.member.web.MemberOutput;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
@@ -10,14 +11,13 @@ import java.util.UUID;
 public interface EventOutput {
     UUID getId();
 
-    @Value("#{target.getOrganizer() == null ? '' : target.getOrganizer().getName() ?: ''}")
-    String getOrganizer();
+    MemberOutput getOrganizer();
 
-    @Value("#{target.getAttendees() == null ? T(java.util.Collections).EMPTY_LIST : target.getAttendees().![name]}")
-    List<String> getAttendees();
+    @Value("#{target.getAttendees() ?: T(java.util.Collections).EMPTY_LIST}")
+    List<MemberOutput> getAttendees();
 
-    @Value("#{target.getFollowers() == null ? T(java.util.Collections).EMPTY_LIST : target.getFollowers().![name]}")
-    List<String> getFollowers();
+    @Value("#{target.getFollowers() ?: T(java.util.Collections).EMPTY_LIST}")
+    List<MemberOutput> getFollowers();
 
     EventStatus getEventStatus();
 
@@ -29,6 +29,9 @@ public interface EventOutput {
     String getName();
 
     String getLocation();
+
+    @Value("#{target.getDescription() ?: ''}")
+    String getDescription();
 
     LocalDateTime getStartDateTime();
 
