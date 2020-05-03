@@ -68,7 +68,7 @@ class EventServiceTest {
     @Test
     void updateEvent_DecreaseMinAttendeeToGreenLit() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING, 0, 5);
         setupMinAttendeeMapper();
 
@@ -84,7 +84,7 @@ class EventServiceTest {
     @Test()
     void updateEvent_IncreaseMinAttendeeToPending() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.GREENLIT, 0, 5);
         setupMinAttendeeMapper();
 
@@ -100,7 +100,7 @@ class EventServiceTest {
     @Test
     void updateEvent_MatchMinAttendeeToGreenLit() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING, 0, 5);
         setupMinAttendeeMapper();
 
@@ -148,7 +148,7 @@ class EventServiceTest {
 
     @Test
     void updateEvent_NotOrganizer() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING);
 
         Exception exception = assertThrows(NotEventOrganizerException.class, () -> {
@@ -161,7 +161,7 @@ class EventServiceTest {
     @Test
     void startEvent_EventPending() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING);
 
         Event result = eventService.startEvent(UUID.randomUUID());
@@ -171,7 +171,7 @@ class EventServiceTest {
     @Test
     void startEvent_EventGreenLit() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.GREENLIT);
 
         Event result = eventService.startEvent(UUID.randomUUID());
@@ -213,7 +213,7 @@ class EventServiceTest {
 
     @Test
     void startEvent_NotOrganizer() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING);
 
         Exception exception = assertThrows(NotEventOrganizerException.class, () -> {
@@ -226,7 +226,7 @@ class EventServiceTest {
     @Test
     void cancelEvent_EventPending() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.PENDING);
 
         Event result = eventService.cancelEvent(UUID.randomUUID());
@@ -236,7 +236,7 @@ class EventServiceTest {
     @Test
     void cancelEvent_EventGreenLit() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.GREENLIT);
 
         Event result = eventService.cancelEvent(UUID.randomUUID());
@@ -246,7 +246,7 @@ class EventServiceTest {
     @Test
     void cancelEvent_EventStarted() {
         Member organizer = generateMember("organizer");
-        when(memberService.getOrCreateCurrentMember()).thenReturn(organizer);
+        when(memberService.getCurrentMember()).thenReturn(organizer);
         setupSuccessfulEventRetrieval(organizer, EventStatus.STARTED);
 
         Event result = eventService.cancelEvent(UUID.randomUUID());
@@ -277,7 +277,7 @@ class EventServiceTest {
 
     @Test
     void cancelEvent_NotOrganizer() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING);
 
         Exception exception = assertThrows(NotEventOrganizerException.class, () -> {
@@ -289,7 +289,7 @@ class EventServiceTest {
 
     @Test
     void addFollower_EventPending() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 2,0);
 
         Event result = eventService.addFollower(UUID.randomUUID());
@@ -298,7 +298,7 @@ class EventServiceTest {
 
     @Test
     void addFollower_EventGreenLit() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, 2,0);
 
         Event result = eventService.addFollower(UUID.randomUUID());
@@ -345,7 +345,7 @@ class EventServiceTest {
         followers.add(current);
         followers.add(generateMember("follower1"));
 
-        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
+        when(memberService.getCurrentMember()).thenReturn(current);
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, followers, Collections.EMPTY_LIST);
 
         Event result = eventService.removeFollower(UUID.randomUUID());
@@ -360,7 +360,7 @@ class EventServiceTest {
         followers.add(current);
         followers.add(generateMember("follower1"));
 
-        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
+        when(memberService.getCurrentMember()).thenReturn(current);
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, followers, Collections.EMPTY_LIST);
 
         Event result = eventService.removeFollower(UUID.randomUUID());
@@ -403,7 +403,7 @@ class EventServiceTest {
 
     @Test
     void addAttendee_PendingToGreenLit() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 0,2, 3);
 
         Event result = eventService.addAttendee(UUID.randomUUID());
@@ -413,7 +413,7 @@ class EventServiceTest {
 
     @Test
     void addAttendee_EventPending() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 0,2, 4);
 
         Event result = eventService.addAttendee(UUID.randomUUID());
@@ -423,7 +423,7 @@ class EventServiceTest {
 
     @Test
     void addAttendee_EventGreenLit() {
-        when(memberService.getOrCreateCurrentMember()).thenReturn(generateMember("current"));
+        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, 0,2, 2);
 
         Event result = eventService.addAttendee(UUID.randomUUID());
@@ -471,7 +471,7 @@ class EventServiceTest {
         attendees.add(generateMember("attendee1"));
         attendees.add(generateMember("attendee2"));
 
-        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
+        when(memberService.getCurrentMember()).thenReturn(current);
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_LIST, attendees, 3);
 
         Event result = eventService.removeAttendee(UUID.randomUUID());
@@ -487,7 +487,7 @@ class EventServiceTest {
         attendees.add(current);
         attendees.add(generateMember("attendee1"));
 
-        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
+        when(memberService.getCurrentMember()).thenReturn(current);
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, Collections.EMPTY_LIST, attendees, 3);
 
         Event result = eventService.removeAttendee(UUID.randomUUID());
@@ -505,7 +505,7 @@ class EventServiceTest {
         attendees.add(generateMember("attendee2"));
         attendees.add(generateMember("attendee3"));
 
-        when(memberService.getOrCreateCurrentMember()).thenReturn(current);
+        when(memberService.getCurrentMember()).thenReturn(current);
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, Collections.EMPTY_LIST, attendees, 3);
 
         Event result = eventService.removeAttendee(UUID.randomUUID());

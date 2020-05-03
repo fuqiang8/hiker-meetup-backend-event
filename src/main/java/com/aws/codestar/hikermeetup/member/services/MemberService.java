@@ -17,7 +17,7 @@ public class MemberService {
         this.currentUserInfoService = currentUserInfoService;
     }
 
-    public Member getOrCreateCurrentMember() {
+    public Member getCurrentMember() {
         CurrentUserInfo userInfo = currentUserInfoService.getUserInfo();
 
         UUID externalIamId = userInfo.getSub();

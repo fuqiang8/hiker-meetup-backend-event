@@ -52,7 +52,7 @@ public class EventService {
     }
 
     public Event createEvent(EventInput eventInput) {
-        Member organizer = memberService.getOrCreateCurrentMember();
+        Member organizer = memberService.getCurrentMember();
 
         Event event = new Event(organizer);
         mapper.map(eventInput, event);
@@ -97,7 +97,7 @@ public class EventService {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
-        Member member = memberService.getOrCreateCurrentMember();
+        Member member = memberService.getCurrentMember();
 
         List<Member> followers = event.getFollowers();
         if (followers == null) {
@@ -115,7 +115,7 @@ public class EventService {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
-        Member member = memberService.getOrCreateCurrentMember();
+        Member member = memberService.getCurrentMember();
 
         List<Member> followers = event.getFollowers();
         if (followers != null) {
@@ -129,7 +129,7 @@ public class EventService {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
-        Member member = memberService.getOrCreateCurrentMember();
+        Member member = memberService.getCurrentMember();
 
         List<Member> attendees = event.getAttendees();
         if (attendees == null) {
@@ -149,7 +149,7 @@ public class EventService {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
-        Member member = memberService.getOrCreateCurrentMember();
+        Member member = memberService.getCurrentMember();
 
         List<Member> attendees = event.getAttendees();
         if (attendees != null) {
@@ -173,7 +173,7 @@ public class EventService {
     }
 
     private void ensureUserIsOrganizer(Member eventOrganizer) {
-        if (!eventOrganizer.equals(memberService.getOrCreateCurrentMember())) {
+        if (!eventOrganizer.equals(memberService.getCurrentMember())) {
             throw new NotEventOrganizerException();
         }
     }
