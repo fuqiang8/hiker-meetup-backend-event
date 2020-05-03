@@ -40,6 +40,8 @@ public class Event {
     @NotNull
     private String location;
 
+    private String description;
+
     @NotNull
     private LocalDateTime startDateTime;
 
@@ -115,6 +117,14 @@ public class Event {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public LocalDateTime getStartDateTime() {

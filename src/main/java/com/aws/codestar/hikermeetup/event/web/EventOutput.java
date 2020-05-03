@@ -30,6 +30,9 @@ public interface EventOutput {
 
     String getLocation();
 
+    @Value("#{target.getDescription() ?: ''}")
+    String getDescription();
+
     LocalDateTime getStartDateTime();
 
     LocalDateTime getEndDateTime();

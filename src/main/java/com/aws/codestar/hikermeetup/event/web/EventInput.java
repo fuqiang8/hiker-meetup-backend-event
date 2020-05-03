@@ -12,6 +12,8 @@ public class EventInput {
 
     private String location;
 
+    private String description;
+
     private LocalDateTime startDateTime;
 
     private LocalDateTime endDateTime;
@@ -46,6 +48,14 @@ public class EventInput {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public LocalDateTime getStartDateTime() {
