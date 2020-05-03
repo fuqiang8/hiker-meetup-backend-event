@@ -1,7 +1,6 @@
 package com.aws.codestar.hikermeetup.member.services;
 
 import com.aws.codestar.hikermeetup.member.data.Member;
-import com.aws.codestar.hikermeetup.member.data.MemberRepository;
 import com.aws.codestar.hikermeetup.security.model.CurrentUserInfo;
 import com.aws.codestar.hikermeetup.security.services.CurrentUserInfoService;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,9 +24,6 @@ public class MemberServiceTest {
     @Mock
     CurrentUserInfoService currentUserInfoService;
 
-    @Mock
-    MemberRepository memberRepository;
-
     private Member existingUser;
 
     private final UUID EXTERNAL_ID = UUID.randomUUID();
@@ -42,19 +38,6 @@ public class MemberServiceTest {
         MockitoAnnotations.initMocks(this);
 
         existingUser = new Member(EXTERNAL_ID, EXISTING_NAME, EXISTING_EMAIL);
-
-        when(memberRepository.findByExternalIamId(any(UUID.class)))
-                .thenAnswer(i -> {
-                    if (existingUser.getExternalIamId().equals(i.getArgument(0))) {
-                        return Optional.of(existingUser);
-                    }
-                    else {
-                        Member newMember = new Member(i.getArgument(0), String.format("%s, %s", NEW_GIVEN_NAME, NEW_FAMILY_NAME), NEW_EMAIL);
-                        ReflectionTestUtils.setField(newMember, "id", UUID.randomUUID());
-
-                        return Optional.of(newMember);
-                    }
-                });
     }
 
     @Test
