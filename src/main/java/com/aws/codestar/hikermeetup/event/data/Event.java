@@ -2,30 +2,22 @@ package com.aws.codestar.hikermeetup.event.data;
 
 import com.aws.codestar.hikermeetup.member.data.Member;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-@Entity
 public class Event {
-    @Id
-    @GeneratedValue
     private UUID id;
 
-    @ManyToOne
     private Member organizer;
 
     // Sign up
-    @ManyToMany
     private Set<Member> attendees;
 
     // Interest
-    @ManyToMany
     private Set<Member> followers;
 
-    @Enumerated(EnumType.ORDINAL)
     @NotNull
     private EventStatus eventStatus;
 

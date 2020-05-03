@@ -2,24 +2,15 @@ package com.aws.codestar.hikermeetup.member.data;
 
 import com.aws.codestar.hikermeetup.event.data.Event;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-@Entity
 public class Member {
-    @Id
-    @GeneratedValue
     private UUID id;
 
-    @ManyToMany
     private List<Event> attended;
 
-    @ManyToMany
     private List<Event> followed;
 
     private UUID externalIamId;
