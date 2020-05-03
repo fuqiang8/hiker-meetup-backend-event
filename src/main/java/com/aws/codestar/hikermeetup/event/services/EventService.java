@@ -1,9 +1,11 @@
 package com.aws.codestar.hikermeetup.event.services;
 
+import com.aws.codestar.hikermeetup.base.EntityNotFoundException;
 import com.aws.codestar.hikermeetup.base.PatchModelMapper;
 import com.aws.codestar.hikermeetup.event.data.Event;
 import com.aws.codestar.hikermeetup.event.data.EventRepository;
 import com.aws.codestar.hikermeetup.event.data.EventStatus;
+import com.aws.codestar.hikermeetup.event.data.PagingEventRepository;
 import com.aws.codestar.hikermeetup.event.exceptions.EventStatusException;
 import com.aws.codestar.hikermeetup.event.exceptions.NotEventOrganizerException;
 import com.aws.codestar.hikermeetup.event.web.EventInput;
@@ -14,8 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -26,17 +29,20 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
+    private final PagingEventRepository pagingEventRepository;
+
     private final PatchModelMapper mapper;
 
-    public EventService(MemberService memberService, EventRepository eventRepository, PatchModelMapper mapper) {
+    public EventService(MemberService memberService, EventRepository eventRepository, PagingEventRepository pagingEventRepository, PatchModelMapper mapper) {
         this.memberService = memberService;
         this.eventRepository = eventRepository;
+        this.pagingEventRepository = pagingEventRepository;
         this.mapper = mapper;
     }
 
     @Transactional(readOnly = true)
     public Page<Event> getEvents(Pageable pageable) {
-        return eventRepository.findAll(pageable);
+        return pagingEventRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
@@ -46,11 +52,11 @@ public class EventService {
     }
 
     public Event createEvent(EventInput eventInput) {
-        Member organizer = memberService.getOrCreateCurrentMember();
+        Member organizer = memberService.getCurrentMember();
 
         Event event = new Event(organizer);
         mapper.map(eventInput, event);
-        event.setEventStatus(EventStatus.PENDING);
+        setEventStatusByAttendees(event);
 
         return eventRepository.save(event);
     }
@@ -62,11 +68,7 @@ public class EventService {
 
         mapper.map(eventInput, event);
 
-        EventStatus eventStatus = event.getAttendees().size() >= event.getMinAttendees() ?
-                EventStatus.GREENLIT :
-                EventStatus.PENDING;
-
-        event.setEventStatus(eventStatus);
+        setEventStatusByAttendees(event);
 
         return eventRepository.save(event);
     }
@@ -95,9 +97,16 @@ public class EventService {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
-        Member member = memberService.getOrCreateCurrentMember();
-        member.getFollowed().add(event);
-        event.getFollowers().add(member);
+        Member member = memberService.getCurrentMember();
+
+        List<Member> followers = event.getFollowers();
+        if (followers == null) {
+            followers = new ArrayList<>();
+            event.setFollowers(followers);
+        }
+
+        if (!followers.contains(member))
+            followers.add(member);
 
         return eventRepository.save(event);
     }
@@ -106,9 +115,12 @@ public class EventService {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
-        Member member = memberService.getOrCreateCurrentMember();
-        member.getFollowed().remove(event);
-        event.getFollowers().remove(member);
+        Member member = memberService.getCurrentMember();
+
+        List<Member> followers = event.getFollowers();
+        if (followers != null) {
+            followers.remove(member);
+        }
 
         return eventRepository.save(event);
     }
@@ -117,15 +129,18 @@ public class EventService {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
-        Member member = memberService.getOrCreateCurrentMember();
-        member.getAttended().add(event);
-        event.getAttendees().add(member);
+        Member member = memberService.getCurrentMember();
 
-        EventStatus eventStatus = event.getAttendees().size() >= event.getMinAttendees() ?
-                EventStatus.GREENLIT :
-                EventStatus.PENDING;
+        List<Member> attendees = event.getAttendees();
+        if (attendees == null) {
+            attendees = new ArrayList<>();
+            event.setAttendees(attendees);
+        }
 
-        event.setEventStatus(eventStatus);
+        if (!attendees.contains(member))
+            attendees.add(member);
+
+        setEventStatusByAttendees(event);
 
         return eventRepository.save(event);
     }
@@ -134,21 +149,31 @@ public class EventService {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
-        Member member = memberService.getOrCreateCurrentMember();
-        member.getAttended().remove(event);
-        event.getAttendees().remove(member);
+        Member member = memberService.getCurrentMember();
 
-        EventStatus eventStatus = event.getAttendees().size() >= event.getMinAttendees() ?
-                EventStatus.GREENLIT :
-                EventStatus.PENDING;
+        List<Member> attendees = event.getAttendees();
+        if (attendees != null) {
+            attendees.remove(member);
+        }
 
-        event.setEventStatus(eventStatus);
+        setEventStatusByAttendees(event);
 
         return eventRepository.save(event);
     }
 
+    private void setEventStatusByAttendees(Event event) {
+        int noOfAttendees = event.getAttendees() == null ? 0 : event.getAttendees().size();
+        int minAttendees = event.getMinAttendees() == null ? 0 : event.getMinAttendees();
+
+        EventStatus eventStatus = noOfAttendees >= minAttendees ?
+                EventStatus.GREENLIT :
+                EventStatus.PENDING;
+
+        event.setEventStatus(eventStatus);
+    }
+
     private void ensureUserIsOrganizer(Member eventOrganizer) {
-        if (!eventOrganizer.equals(memberService.getOrCreateCurrentMember())) {
+        if (!eventOrganizer.equals(memberService.getCurrentMember())) {
             throw new NotEventOrganizerException();
         }
     }
