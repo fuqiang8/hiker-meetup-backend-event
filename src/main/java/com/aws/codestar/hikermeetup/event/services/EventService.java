@@ -5,6 +5,7 @@ import com.aws.codestar.hikermeetup.base.PatchModelMapper;
 import com.aws.codestar.hikermeetup.event.data.Event;
 import com.aws.codestar.hikermeetup.event.data.EventRepository;
 import com.aws.codestar.hikermeetup.event.data.EventStatus;
+import com.aws.codestar.hikermeetup.event.data.PagingEventRepository;
 import com.aws.codestar.hikermeetup.event.exceptions.EventStatusException;
 import com.aws.codestar.hikermeetup.event.exceptions.NotEventOrganizerException;
 import com.aws.codestar.hikermeetup.event.web.EventInput;
@@ -26,17 +27,20 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
+    private final PagingEventRepository pagingEventRepository;
+
     private final PatchModelMapper mapper;
 
-    public EventService(MemberService memberService, EventRepository eventRepository, PatchModelMapper mapper) {
+    public EventService(MemberService memberService, EventRepository eventRepository, PagingEventRepository pagingEventRepository, PatchModelMapper mapper) {
         this.memberService = memberService;
         this.eventRepository = eventRepository;
+        this.pagingEventRepository = pagingEventRepository;
         this.mapper = mapper;
     }
 
     @Transactional(readOnly = true)
     public Page<Event> getEvents(Pageable pageable) {
-        return eventRepository.findAll(pageable);
+        return pagingEventRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
