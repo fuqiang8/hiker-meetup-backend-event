@@ -9,5 +9,5 @@ cognito:
 
 dynamodb:
   endpoint: dynamodb.ap-southeast-1.amazonaws.com
-  accesskey: AKIA4RJFROMUNRIJRVN3
-  secretkey: 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
+  accesskey: AKIA4RJFROMUGKSEYKVC
+  secretkey: 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
