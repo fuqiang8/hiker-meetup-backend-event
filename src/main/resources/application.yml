@@ -9,5 +9,4 @@ cognito:
 
 dynamodb:
   endpoint: dynamodb.ap-southeast-1.amazonaws.com
-  accesskey: AKIA4RJFROMUGKSEYKVC
-  secretkey: 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
+  region: ap-southeast-1
