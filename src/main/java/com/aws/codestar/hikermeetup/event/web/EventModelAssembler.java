@@ -27,6 +27,14 @@ public class EventModelAssembler implements RepresentationModelAssembler<Event, 
                 linkTo(methodOn(EventController.class).getEvent(event.getId()))
                         .withSelfRel(),
                 linkTo(methodOn(EventController.class).getEvents(PageRequest.of(0, 20)))
-                        .withRel("events"));
+                        .withRel("events"),
+                linkTo(methodOn(EventController.class).likeEvent(event.getId()))
+                        .withRel("like"),
+                linkTo(methodOn(EventController.class).unlikeEvent(event.getId()))
+                        .withRel("unlike"),
+                linkTo(methodOn(EventController.class).attendEvent(event.getId()))
+                        .withRel("attend"),
+                linkTo(methodOn(EventController.class).missEvent(event.getId()))
+                        .withRel("miss"));
     }
 }
