@@ -120,6 +120,22 @@ public class EventController {
         return eventModelAssembler.toModel(event);
     }
 
+    @Operation(summary = "Finish existing event",
+            description = "Respond with 403 if there is no logged in user / logged in user is not the event's organizer. " +
+                    "Respond with 422 UNLESS event had started.",
+            security = { @SecurityRequirement(name = "auth", scopes = { "openid" }) })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "403", description = "Require user login / User is not the event's organizer",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class)))),
+            @ApiResponse(responseCode = "422", description = "Event not in started state.",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorMessage.class))))})
+    @PostMapping("/{eventId}/finish")
+    public EntityModel<?> finish(@PathVariable UUID eventId) {
+        Event event = eventService.finishEvent(eventId);
+        return eventModelAssembler.toModel(event);
+    }
+
     @Operation(summary = "Cancel existing event",
             description = "Respond with 403 if there is no logged in user / logged in user is not the event's organizer. " +
                     "Respond with 422 if event had finished or had been cancelled.",

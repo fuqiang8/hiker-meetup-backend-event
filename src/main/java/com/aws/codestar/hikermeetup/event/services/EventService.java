@@ -83,6 +83,16 @@ public class EventService {
         return eventRepository.save(event);
     }
 
+    public Event finishEvent(UUID eventId) {
+        Event event = getEvent(eventId);
+        ensureValidEventStatus(event, EventStatus.STARTED);
+        ensureUserIsOrganizer(event.getOrganizer());
+
+        event.setEventStatus(EventStatus.FINISHED);
+
+        return eventRepository.save(event);
+    }
+
     public Event cancelEvent(UUID eventId) {
         Event event = getEvent(eventId);
         ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT, EventStatus.STARTED);
