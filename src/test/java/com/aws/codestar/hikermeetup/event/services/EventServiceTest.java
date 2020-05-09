@@ -354,7 +354,7 @@ class EventServiceTest {
     }
 
     @Test
-    void addFollower_EventPending() {
+    void addFollower() {
         when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
         setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.PENDING, 2,0);
 
@@ -363,49 +363,7 @@ class EventServiceTest {
     }
 
     @Test
-    void addFollower_EventGreenLit() {
-        when(memberService.getCurrentMember()).thenReturn(generateMember("current"));
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, 2,0);
-
-        Event result = eventService.addFollower(UUID.randomUUID());
-        assertEquals(3, result.getFollowers().size());
-    }
-
-    @Test
-    void addFollower_EventStarted() {
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.STARTED);
-
-        Exception exception = assertThrows(EventStatusException.class, () -> {
-            eventService.addFollower(UUID.randomUUID());
-        });
-
-        assertTrue(exception.getMessage().contains("had started"));
-    }
-
-    @Test
-    void addFollower_EventFinished() {
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.FINISHED);
-
-        Exception exception = assertThrows(EventStatusException.class, () -> {
-            eventService.addFollower(UUID.randomUUID());
-        });
-
-        assertTrue(exception.getMessage().contains("had finished"));
-    }
-
-    @Test
-    void addFollower_EventCanceled() {
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.CANCELED);
-
-        Exception exception = assertThrows(EventStatusException.class, () -> {
-            eventService.addFollower(UUID.randomUUID());
-        });
-
-        assertTrue(exception.getMessage().contains("had been canceled"));
-    }
-
-    @Test
-    void removeFollower_EventPending() {
+    void removeFollower() {
         Member current = generateMember("current");
         ArrayList followers = new ArrayList();
         followers.add(current);
@@ -417,54 +375,6 @@ class EventServiceTest {
         Event result = eventService.removeFollower(UUID.randomUUID());
         assertEquals(1, result.getFollowers().size());
         assertTrue(!result.getFollowers().contains(current));
-    }
-
-    @Test
-    void removeFollower_EventGreenLit() {
-        Member current = generateMember("current");
-        ArrayList followers = new ArrayList();
-        followers.add(current);
-        followers.add(generateMember("follower1"));
-
-        when(memberService.getCurrentMember()).thenReturn(current);
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.GREENLIT, followers, Collections.EMPTY_LIST);
-
-        Event result = eventService.removeFollower(UUID.randomUUID());
-        assertEquals(1, result.getFollowers().size());
-        assertTrue(!result.getFollowers().contains(current));
-    }
-
-    @Test
-    void removeFollower_EventStarted() {
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.STARTED);
-
-        Exception exception = assertThrows(EventStatusException.class, () -> {
-            eventService.removeFollower(UUID.randomUUID());
-        });
-
-        assertTrue(exception.getMessage().contains("had started"));
-    }
-
-    @Test
-    void removeFollower_EventFinished() {
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.FINISHED);
-
-        Exception exception = assertThrows(EventStatusException.class, () -> {
-            eventService.removeFollower(UUID.randomUUID());
-        });
-
-        assertTrue(exception.getMessage().contains("had finished"));
-    }
-
-    @Test
-    void removeFollower_EventCanceled() {
-        setupSuccessfulEventRetrieval(generateMember("organizer"), EventStatus.CANCELED);
-
-        Exception exception = assertThrows(EventStatusException.class, () -> {
-            eventService.removeFollower(UUID.randomUUID());
-        });
-
-        assertTrue(exception.getMessage().contains("had been canceled"));
     }
 
     @Test
