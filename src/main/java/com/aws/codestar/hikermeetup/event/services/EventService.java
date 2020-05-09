@@ -105,7 +105,6 @@ public class EventService {
 
     public Event addFollower(UUID eventId) {
         Event event = getEvent(eventId);
-        ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
         Member member = memberService.getCurrentMember();
 
@@ -123,7 +122,6 @@ public class EventService {
 
     public Event removeFollower(UUID eventId) {
         Event event = getEvent(eventId);
-        ensureValidEventStatus(event, EventStatus.PENDING, EventStatus.GREENLIT);
 
         Member member = memberService.getCurrentMember();
 
